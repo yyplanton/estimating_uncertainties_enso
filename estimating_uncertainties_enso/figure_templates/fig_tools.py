@@ -25,22 +25,112 @@ from estimating_uncertainties_enso.compute_lib.check_lib import check_type, prin
 # ---------------------------------------------------------------------------------------------------------------------#
 # Functions
 # ---------------------------------------------------------------------------------------------------------------------#
-def _tool_axis_label(arr_i: list, nam_i: str = ""):
+def _tool_flatten_list(arr_i, list_values: list = None):
+    """
+    Flatten list of lists
+    
+    Inputs:
+    -------
+    :param arr_i: array_like
+    :param list_values: list, optional
+    
+    Output:
+    -------
+    :return list_values: list
+        Flatten list
+    """
+    # check input
+    if list_values is None:
+        list_values = []
+    error = list()
+    check_type(arr_i, "arr_i", (float, int, list, numpy__ndarray), error)
+    print_fail(inspect__stack(), "\n".join(k for k in error))
+    # if list contains list, flatten
+    if isinstance(arr_i, (list, numpy__ndarray)) is True:
+        for k in arr_i:
+            _tool_flatten_list(k, list_values=list_values)
+    else:
+        list_values.append(arr_i)
+    return list_values
+
+
+def _tool_axis_auto_ticks(arr_i: list):
+    """
+    Create automatic optimized axis ticks
+    
+    Input:
+    ------
+    :param arr_i: list
+        Values to plot
+    
+    Output:
+    -------
+    :return list_ticks: list
+        Ticks for the plot axis
+    """
+    # check input
+    error = list()
+    check_type(arr_i, "arr_i", list, error)
+    print_fail(inspect__stack(), "\n".join(k for k in error))
+    # if list contains lists, flatten lists
+    list_values = _tool_flatten_list(arr_i)
+    # compute auto range
+    if len(list_values) == 0:
+        list_ticks = list(range(2))
+    elif len(list_values) == 1:
+        value = list_values[0]
+        # order of magnitude of the value
+        o_of_magnitude = math__floor(math__log(value, 10))
+        # coefficient corresponding to the order of magnitude
+        coefficient = 10**o_of_magnitude
+        # one tick below value and one tick above value
+        list_ticks = [math__floor(value / coefficient) * coefficient, math__ceil(value / coefficient) * coefficient]
+    else:
+        # range of input values
+        range_values = max(list_values) - min(list_values)
+        # order of magnitude of a 4th of the range (5 ticks between min and max)
+        o_of_magnitude = math__floor(math__log(range_values / 4, 10))
+        # coefficient corresponding to the order of magnitude - 1 (values in 10s)
+        coefficient = 10**o_of_magnitude
+        # difference between the floor and the maximum value
+        delta = max(list_values) / coefficient - math__floor(min(list_values) / coefficient)
+        # increment to have 5 ticks between floor and max(list_values)
+        increment = math__ceil(delta / 4)
+        # adapt coefficient
+        while delta / increment <= 3:
+            # due to the rounding up, the increment may be too big, if it is the case the coefficient is decreased
+            coefficient /= 10
+            # difference between the floor and the maximum value
+            delta = max(list_values) / coefficient - math__floor(min(list_values) / coefficient)
+            # increment to have 5 ticks between floor and max(list_values)
+            increment = math__ceil(delta / 4)
+        # lowest order of magnitude lower than the minimum value and higher than maximum value
+        floor = math__floor(min(list_values) / coefficient)
+        ceiling = math__ceil(max(list_values) / coefficient)
+        # make sure that there is 4 increments in range
+        if ceiling - floor <= 4 * increment:
+            ceiling += increment
+        # 5 ticks
+        list_ticks = [k * coefficient for k in range(floor, ceiling, increment)]
+    return list_ticks
+
+
+def tool_axis_label(arr_i: list, nam_i: str = ""):
     """
     Format list of ints or floats into a list of str with the same number of decimals (up to 3 decimals)
 
     Inputs:
     -------
     :param arr_i: list
-        List of ints or floats; e.g., arr_i = [1, 2.5]
+        Axis ticks; e.g., arr_i = [1, 2.5]
     :param nam_i: str, optional
         Name of the axis to do special labels (nam_i = 'latitude' or 'longitude')
-        Default is None (no special label)
+        Default is '' (no special label)
 
     Output:
     -------
     :return labels: list
-        List of strs; e.g., labels = ['1.0', '2.5']
+        Tick labels; e.g., labels = ['1.0', '2.5']
     """
     # check input
     error = list()
@@ -75,82 +165,84 @@ def _tool_axis_label(arr_i: list, nam_i: str = ""):
     return labels
 
 
-def _tool_flatten_list(arr_i, list_values: list = None):
-    # check input
-    if list_values is None:
-        list_values = []
-    error = list()
-    check_type(arr_i, "arr_i", (float, int, list, numpy__ndarray), error)
-    print_fail(inspect__stack(), "\n".join(k for k in error))
-    # if list contains list, flatten
-    if isinstance(arr_i, (list, numpy__ndarray)) is True:
-        for k in arr_i:
-            _tool_flatten_list(k, list_values=list_values)
-    else:
-        list_values.append(arr_i)
-    return list_values
-
-
-def _tool_axis_auto_range(arr_i):
-    # check input
-    error = list()
-    check_type(arr_i, "arr_i", list, error)
-    print_fail(inspect__stack(), "\n".join(k for k in error))
-    # if list contains lists, flatten lists
-    list_values = _tool_flatten_list(arr_i)
-    # compute auto range
-    if len(list_values) == 0:
-        list_tics = list(range(2))
-    elif len(list_values) == 1:
-        value = list_values[0]
-        # order of magnitude of the value
-        o_of_magnitude = math__floor(math__log(value, 10))
-        # coefficient corresponding to the order of magnitude
-        coefficient = 10**o_of_magnitude
-        # one tick below value and one tick above value
-        list_tics = [math__floor(value / coefficient) * coefficient, math__ceil(value / coefficient) * coefficient]
-    else:
-        # range of input values
-        range_values = max(list_values) - min(list_values)
-        # order of magnitude of a 4th of the range (5 tics between min and max)
-        o_of_magnitude = math__floor(math__log(range_values / 4, 10))
-        # coefficient corresponding to the order of magnitude - 1 (values in 10s)
-        coefficient = 10**o_of_magnitude
-        # lowest order of magnitude lower than the minimum value and higher than maximum value
-        floor = math__floor(min(list_values) / coefficient)
-        ceiling = math__ceil(max(list_values) / coefficient)
-        # increment to have 5 tics between floor and max(list_values)
-        increment = math__ceil((max(list_values) / coefficient - floor) / 4)
-        # make sure that there is 4 increments in range
-        if ceiling - floor <= 4 * increment:
-            ceiling += increment
-        # 5 ticks
-        list_tics = [k * coefficient for k in range(floor, ceiling, increment)]
-    return list_tics
-
-
-def tool_figure_axis(user_ticks, arr_i=None, axis_name=""):
+def tool_figure_axis(user_ticks, arr_i=None, axis_name: str = ""):
+    """
+    Create axis ticks, tick labels and limits
+    
+    Inputs:
+    -------
+    :param user_ticks: list
+        User defined tics; e.g., user_ticks = [1, 2, 3, 4]
+    :param arr_i: list, optional
+        Values to plot; e.g., arr_i = [[1, 2], [3, 4], [[5, 6], [7, 8]]]
+    :param axis_name: str, optional
+        Name of the axis to do special labels (nam_i = 'latitude' or 'longitude')
+        Default is '' (no special label)
+    
+    Outputs:
+    --------
+    :return axis_tick_labels: list
+        Axis tick labels
+    :return axis_min_max: list
+        Axis minimum and maximum values
+    :return axis_ticks: list
+        Axis ticks
+    """
     if user_ticks is None:
-        axis_ticks = _tool_axis_auto_range(arr_i)
+        axis_ticks = _tool_axis_auto_ticks(arr_i)
     else:
         axis_ticks = deepcopy(user_ticks)
-    axis_tick_labels = _tool_axis_label(axis_ticks, nam_i=axis_name)
+    axis_tick_labels = tool_axis_label(axis_ticks, nam_i=axis_name)
     axis_min_max = [min(axis_ticks), max(axis_ticks)]
     return axis_tick_labels, axis_min_max, axis_ticks
 
 
-def tool_figure_initialization(diagnostics, fig_orientation, x_delt, x_size, y_delt, y_size):
+def tool_figure_initialization(data_diagnostics: list, fig_orientation: str, x_delt: int, x_size: int, y_delt: int,
+                               y_size: int):
+    """
+    Order diagnostics, choose how many diagnostics are plotted on each line, compute the number of columns and lines
+    
+    Inputs:
+    -------
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param x_delt: int
+        Horizontal distance between panels
+    :param x_size: int
+        Horizontal size of each panel
+    :param y_delt:  int
+        Vertical distance between panels
+    :param y_size: int
+        Vertical size of each panel
+    
+    Outputs:
+    --------
+    :return list_dia: list
+        Ordered list of diagnostics
+    :return n_panel_per_line: int
+        Number of panels (diagnostics) per line
+    :return nbr_c: int
+        Number of columns
+    :return nbr_l: int
+        Number of lines
+    """
     # check input
     error = list()
-    check_type(diagnostics, "diagnostics", list, error)
+    check_type(data_diagnostics, "data_diagnostics", list, error)
     check_type(fig_orientation, "fig_orientation", str, error)
     print_fail(inspect__stack(), "\n".join(k for k in error))
     # reorder diagnostic list and select the number of diagnostic per line
     if fig_orientation == "column":
-        list_dia = deepcopy(diagnostics)
+        list_dia = deepcopy(data_diagnostics)
         n_panel_per_line = len([k for k in list_dia if "ave_" in k])
     else:
-        list_dia = [k2 for k1 in ["_pr_", "_ts_"] for k2 in diagnostics if k1 in k2 and k2[:4] != "nst_"]
+        list_dia = [k2 for k1 in ["_pr_", "_ts_"] for k2 in data_diagnostics if k1 in k2 and k2[:4] != "nst_"]
         n_panel_per_line = len([k for k in list_dia if ("_pr_" in list_dia[0] and "_pr_" in k) or
                                 ("_ts_" in list_dia[0] and "_ts_" in k)])
     # number of columns and rows of the plot
@@ -159,38 +251,104 @@ def tool_figure_initialization(diagnostics, fig_orientation, x_delt, x_size, y_d
     return list_dia, n_panel_per_line, nbr_c, nbr_l
 
 
-def tool_legend_datasets(dict_i, dict_colors, dict_markers, legend_dict, legend_list, list_diagnostics, counter,
-                         nbr_panels_per_line, fig_legend_position, x_frac, x_size, y_frac, y_size,
-                         uncertainty_reference: str = ""):
-    if (fig_legend_position == "bottom" and counter == len(list_diagnostics) - nbr_panels_per_line) or (
-            fig_legend_position == "right" and counter + 1 == nbr_panels_per_line):
+def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, legend_dict: dict, legend_list: list,
+                         data_diagnostics: list, counter: int, n_panel_per_line: int, fig_legend_position: str,
+                         x_frac: float, x_size: int, y_frac: float, y_size: int):
+    """
+    Organize data for the datasets legend
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary of data to plot, the first level must be the datasets
+    :param fig_colors: dict
+        Dictionary with one level [dataset], filled with the color to plot each dataset;
+        e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
+    :param fig_markers:
+        Dictionary with one level [dataset], filled with the marker to plot each dataset;
+        e.g., fig_markers = {'ACCESS-CM2': '>', 'ACCESS-ESM1-5': '<'}
+    :param legend_dict: dict
+        Dictionary with the legend parameters (see fig_panel.py);
+        e.g., legend_dict = {
+            'ACCESS-CM2': {
+                'position': {'x': 10, 'y': 10},
+                'text': {'color': 'k'},
+            },
+        }
+        Usually this dictionary is empty
+    :param legend_list: list
+        Order of the keys for the legend; legend_list = ['ACCESS-CM2']
+    :param data_diagnostics:  list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param counter: int
+        Panel number; e.g., counter = 0
+    :param n_panel_per_line: int
+        Number of panels (diagnostics) per line; e.g., n_panel_per_line = 2
+    :param fig_legend_position:  str
+        Position of the legend; e.g., fig_legend_position = 'bottom'
+        Two legend positions are accepted: 'bottom', 'right'
+    :param x_frac: float
+        Fraction to multiply 'x_size' (to shrink or expend figure proportionally)
+    :param x_size: int
+        Horizontal size of each panel
+    :param y_frac: float
+        Fraction to multiply 'y_size' (to shrink or expend figure proportionally)
+    :param y_size: int
+        Vertical size of each panel
+    """
+    if (fig_legend_position == "bottom" and counter == len(data_diagnostics) - n_panel_per_line) or (
+            fig_legend_position == "right" and counter + 1 == n_panel_per_line):
         # add markers and dataset names at the bottom or top right of the figure
-        list_datasets = [k for k in list(dict_markers.keys()) if k in list(dict_i.keys())]
+        list_datasets = [k for k in list(fig_markers.keys()) if k in list(dict_i.keys())]
         if fig_legend_position == "bottom":
-            n_dat_per_col = math__ceil(len(list_datasets) / (nbr_panels_per_line * 2))
-            x0, x1 = -35, 70
-            # y0 = -32 if uncertainty_reference == "maximum" else -25
-            y0 = -25
-            y1 = 8
+            n_dat_per_col = math__ceil(len(list_datasets) / (n_panel_per_line * 2))
+            x0, x1, y0, y1 = -35, 70, -25, 8
         else:
             n_dat_per_col = len(list_datasets)
             x0, x1, y0, y1 = 105, 0, 94, 8
         x1 *= default_plot["size_x"] / (x_size * x_frac)
         y1 *= default_plot["size_y"] / (y_size * y_frac)
         for k1, k2 in enumerate(list_datasets):
-            legend_dict[k2] = {"text": {"color": dict_colors[k2], "fontsize": 12}}
-            legend_dict[k2]["marker"] = {"facecolor": dict_colors[k2], "marker": dict_markers[k2], "s": 80}
+            legend_dict[k2] = {"text": {"color": fig_colors[k2], "fontsize": 12}}
+            legend_dict[k2]["marker"] = {"facecolor": fig_colors[k2], "marker": fig_markers[k2], "s": 80}
             legend_dict[k2]["position"] = {"x": x0 + x1 * (k1 // n_dat_per_col), "y": y0 - y1 * (k1 % n_dat_per_col)}
             legend_list.append(k2)
     return
 
 
-def tool_title(dict_titles, counter, nbr_panels_per_line, fig_orientation, txt=""):
+def tool_title(fig_titles: dict, counter: int, n_panel_per_line: int, fig_orientation: str, txt: str = ""):
+    """
+    Choose to write column and row titles or not
+    
+    Inputs:
+    -------
+    :param fig_titles: dict
+        Dictionary of 'x' and 'y' titles; e.g., fig_titles = {'x': 'N3 PR', 'y': 'mean'}
+    :param counter: int
+        Panel number; e.g., counter = 0
+    :param n_panel_per_line: int
+        Number of panels (diagnostics) per line; e.g., n_panel_per_line = 2
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param txt: str
+        Text to add to x-axis title
+    
+    Outputs:
+    --------
+    :return title_column: str
+        Name of the column
+    :return title_row: str
+        Name of the row
+    """
     if fig_orientation == "column":
-        title_column = str(txt) + str(dict_titles["x"]) if counter < nbr_panels_per_line else ""
-        title_row = dict_titles["y"] if counter % nbr_panels_per_line == 0 else ""
+        title_column = str(txt) + str(fig_titles["x"]) if counter < n_panel_per_line else ""
+        title_row = fig_titles["y"] if counter % n_panel_per_line == 0 else ""
     else:
-        title_column = dict_titles["y"] if counter < nbr_panels_per_line else ""
-        title_row = str(txt) + str(dict_titles["x"]) if counter % nbr_panels_per_line == 0 else ""
+        title_column = fig_titles["y"] if counter < n_panel_per_line else ""
+        title_row = str(txt) + str(fig_titles["x"]) if counter % n_panel_per_line == 0 else ""
     return title_column, title_row
 # ---------------------------------------------------------------------------------------------------------------------#

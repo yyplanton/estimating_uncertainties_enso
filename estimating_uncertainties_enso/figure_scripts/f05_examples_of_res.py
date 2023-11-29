@@ -54,9 +54,9 @@ default = {
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": default_parameters["uncertainty_distribution"],
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
     "uncertainty_combinations": default_parameters["uncertainty_combinations"],
-    # number of resamples used for the bootstrap if uncertainty_theory is False: int [0, 1e10]
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     "uncertainty_resamples": default_parameters["uncertainty_resamples"],
     # uncertainty computed for a given experiment
     "uncertainty_experiment": "piControl",
@@ -101,7 +101,7 @@ default = {
     "fig_format": default_parameters["fig_format"],
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
-    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = statistics)
+    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # size of each panel
     "fig_panel_size": {"x_delt": 2, "x_frac": 0.5, "x_size": 5, "y_delt": 3, "y_frac": 0.5, "y_size": 8},
@@ -116,8 +116,8 @@ default = {
     "fig_markers": default_parameters["fig_markers"],
     # marker size: all marker have the same size
     "fig_marker_size": 150.,
-    # ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "x_axis": list(range(0, 3)),
         "y_axis": list(range(0, 61, 15)),
     },
@@ -160,10 +160,10 @@ def f05_required_ensemble_size(data_diagnostics: list = default["data_diagnostic
                                fig_marker_size: float = default["fig_marker_size"],
                                fig_orientation: str = default["fig_orientation"],
                                fig_panel_size: dict = default["fig_panel_size"],
-                               fig_ranges: dict = default["fig_ranges"],
                                fig_smile_selected: str = default["fig_smile_selected"],
+                               fig_ticks: dict = default["fig_ticks"],
                                fig_titles: dict = default["fig_titles"],
-                               panel_param: dict = default["panel_param"]):
+                               panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -186,18 +186,6 @@ def f05_required_ensemble_size(data_diagnostics: list = default["data_diagnostic
     # -- Organize data for the plot
     #
     examples = nest_examples_of_res_method(res, fig_smile_selected)
-    for dia in sorted(list(examples.keys()), key=str.casefold):
-        for method in sorted(list(examples[dia].keys()), key=str.casefold):
-            for dur in sorted(list(examples[dia][method].keys()), key=str.casefold):
-                for pro in sorted(list(examples[dia][method][dur].keys()), key=str.casefold):
-                    for exp in sorted(list(examples[dia][method][dur][pro].keys()), key=str.casefold):
-                        print(dia, method, dur, pro, exp)
-                        arr = examples[dia][method][dur][pro][exp]["boxplot"]
-                        nbr_cap = sum([1 for k in arr if k == res_maximum])
-                        print(str("RES of " + str(fig_smile_selected) + ": ").rjust(25) +
-                              str(examples[dia][method][dur][pro][exp]["marker"]).rjust(2))
-                        print(str("nbr of RES set to " + str(res_maximum) + ": ").rjust(25) + str(nbr_cap).rjust(2) +
-                              str("(" + "{0:.1f}".format(round(nbr_cap * 100 / len(arr), 1)) + "%)").rjust(8))
     for dia in list(uncertainty_threshold.keys()):
         for method in list(uncertainty_threshold[dia].keys()):
             dict_method = uncertainty_threshold[dia][method]
@@ -220,6 +208,12 @@ def f05_required_ensemble_size(data_diagnostics: list = default["data_diagnostic
                 tmp = "P$_{" + str(100 - uncertainty_confidence_interval) + "}$"
                 lab = str(fig_titles["absolute"]) + " = " + str(tmp) + "(" + r"$\vert$" + "mod - obs" + r"$\vert$" + ")"
             fig_titles = tool_put_in_dict(fig_titles, lab, "x_axis", dia, method)
+    # x tics
+    if "x_axis" not in list(fig_ticks.keys()):
+        fig_ticks = tool_put_in_dict(fig_ticks, None, "x_axis")
+    # y tics
+    if "y_axis" not in list(fig_ticks.keys()):
+        fig_ticks = tool_put_in_dict(fig_ticks, None, "y_axis")
     #
     # -- Figure
     #
@@ -241,6 +235,6 @@ def f05_required_ensemble_size(data_diagnostics: list = default["data_diagnostic
         fig_name += "_" + str(95) + "ci"
         fig_name += "_" + str(fig_orientation)
     fig_examples_of_res(examples, data_diagnostics, fig_format, fig_name, fig_colors, fig_markers, fig_marker_size,
-                        fig_orientation, fig_panel_size, fig_ranges, fig_smile_selected, fig_titles,
+                        fig_orientation, fig_panel_size, fig_smile_selected, fig_ticks, fig_titles,
                         panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

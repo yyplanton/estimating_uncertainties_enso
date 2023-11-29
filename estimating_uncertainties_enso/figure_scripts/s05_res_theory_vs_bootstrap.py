@@ -49,10 +49,10 @@ default = {
     #
     # confidence interval of the uncertainty: float [0, 100]
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
-    "uncertainty_combinations": default_parameters["uncertainty_combinations"],
-    # number of resamples used for the bootstrap if uncertainty_theory is False: int [0, 1e10]
-    "uncertainty_resamples": default_parameters["uncertainty_resamples"],
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
+    "uncertainty_combinations": int(1e2),  # default_parameters["uncertainty_combinations"],
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
+    "uncertainty_resamples": int(1e2),  # default_parameters["uncertainty_resamples"],
     # uncertainty to reach per diagnostic per method
     "uncertainty_threshold": {
         "ave_pr_val_n30e": {"unc": {"uncertainty_relative": True, "threshold": list(range(5, 101, 5))}},
@@ -82,8 +82,8 @@ default = {
     "fig_marker": "o",
     "fig_marker_color": "grey",
     "fig_marker_size": 50.,
-    # ranges
-    "fig_ranges": {
+    # tics
+    "fig_ticks": {
         "res": list(range(0, 61, 15)),
     },
     # titles
@@ -121,9 +121,9 @@ def s05_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
                             fig_marker_color: str = default["fig_marker_color"],
                             fig_marker_size: float = default["fig_marker_size"],
                             fig_panel_size: dict = default["fig_panel_size"],
-                            fig_ranges: dict = default["fig_ranges"],
+                            fig_ticks: dict = default["fig_ticks"],
                             fig_titles: dict = default["fig_titles"],
-                            panel_param: dict = default["panel_param"]):
+                            panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -169,8 +169,8 @@ def s05_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
     fig_colors, fig_markers = {}, {}
     for dia in list(data_to_plot.keys()):
         # x-y ranges
-        if dia not in list(fig_ranges.keys()):
-            fig_ranges = tool_put_in_dict(fig_ranges, None, dia)
+        if dia not in list(fig_ticks.keys()):
+            fig_ticks = tool_put_in_dict(fig_ticks, None, dia)
         # x-y titles
         if "x_axis" not in list(fig_titles.keys()) or (
                 "x_axis" in list(fig_titles.keys()) and dia not in list(fig_titles["x_axis"].keys())):
@@ -203,6 +203,6 @@ def s05_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
             fig_name += "_all_smile" if data_mme_use_all_smiles is True else "_1st_smile"
         fig_name += "_" + str(95) + "ci"
     fig_scatter_and_regression(data_to_plot, ["res"], fig_format, fig_name, fig_colors, fig_markers, fig_marker_size,
-                               "row", fig_panel_size, fig_ranges, fig_titles, fig_legend_bool=False,
+                               "row", fig_panel_size, fig_ticks, fig_titles, fig_legend_bool=False,
                                fig_title_bool=False, panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

@@ -30,7 +30,7 @@ from . tool_lib import tool_put_in_dict, tool_tuple_for_dict
 def nest_compute_res(dict_i, dict_threshold: dict, res_maximum: int, uncertainty_confidence_interval: float,
                      uncertainty_distribution: str, uncertainty_combinations: int, uncertainty_resamples: int,
                      uncertainty_theory: bool, dict_o: dict = None, list_k: tuple = None,
-                     list_k_last: tuple = None):
+                     list_k_last: tuple = None) -> (dict, tuple, tuple):
     """
     Compute the uncertainty of the sample mean
 
@@ -122,7 +122,7 @@ def nest_compute_res(dict_i, dict_threshold: dict, res_maximum: int, uncertainty
 
 
 def nest_compute_statistic(dict_i, statistic: str, dict_o: dict = None, list_k: tuple = None,
-                           list_k_last: tuple = None):
+                           list_k_last: tuple = None) -> (dict, tuple, tuple):
     """
     Compute given statistic on arrays within the nested dictionary
 
@@ -182,7 +182,7 @@ def nest_compute_statistic(dict_i, statistic: str, dict_o: dict = None, list_k: 
 def nest_compute_uncertainty(dict_i, uncertainty_confidence_interval: float, uncertainty_distribution: str,
                              uncertainty_relative: bool, uncertainty_combinations: int, uncertainty_resamples: int,
                              uncertainty_theory: bool, uncertainty_sample_sizes: list = None, dict_o: dict = None,
-                             list_k: tuple = None, list_k_last: tuple = None):
+                             list_k: tuple = None, list_k_last: tuple = None) -> (dict, tuple, tuple):
     """
     Compute the uncertainty of the sample mean
 
@@ -273,7 +273,7 @@ def nest_compute_uncertainty_hi_vs_pi(dict_i: dict, uncertainty_confidence_inter
                                       uncertainty_distribution: str, uncertainty_relative: bool,
                                       uncertainty_combinations: int, uncertainty_resamples: int,
                                       uncertainty_theory: bool, uncertainty_historical_epoch: str,
-                                      reference_experiment: str = "piControl"):
+                                      reference_experiment: str = "piControl") -> dict:
     """
     Compute the uncertainty of the sample mean
 
@@ -373,7 +373,8 @@ def nest_compute_uncertainty_hi_vs_pi(dict_i: dict, uncertainty_confidence_inter
     return dict_o
 
 
-def nest_define_uncertainty_threshold(dict_i: dict, dict_threshold: dict, selected_model_experiment: str = None):
+def nest_define_uncertainty_threshold(dict_i: dict, dict_threshold: dict,
+                                      selected_model_experiment: str = None) -> (dict, dict):
     """
     Define the uncertainty thresholds for each case (diagnostic, epoch_length, project, experiment, dataset, epoch,
     method)
@@ -485,7 +486,7 @@ def nest_define_uncertainty_threshold(dict_i: dict, dict_threshold: dict, select
     return dict_model, dict_threshold_updated
 
 
-def nest_examples_of_res_method(dict_i: dict, selected_model: str):
+def nest_examples_of_res_method(dict_i: dict, selected_model: str) -> dict:
     """
     Organize data to plot examples of RES values depending on the method to define it
     
@@ -500,58 +501,69 @@ def nest_examples_of_res_method(dict_i: dict, selected_model: str):
     Output:
     -------
     :return: dict
-        Dictionary with six nested levels [diagnostic, method, epoch_length, project, experiment, boxplot-or-marker],
-        filled with the list of values to plot
+        Dictionary with three nested levels [diagnostic, method, boxplot-or-marker], filled with the list of values to
+        plot
     """
     dict_o = {}
     for dia in list(dict_i.keys()):
-        for dur in list(dict_i[dia].keys()):
-            for pro in list(dict_i[dia][dur].keys()):
-                for exp in list(dict_i[dia][dur][pro].keys()):
-                    # dictionary
-                    d1 = dict_i[dia][dur][pro][exp]
-                    # list methods
-                    list_methods = list(set([method for dat in list(d1.keys()) for epo in list(d1[dat].keys())
-                                             for method in list(d1[dat][epo].keys())]))
-                    for method in list_methods:
-                        # list thresholds
-                        list_thresholds = []
-                        for dat in list(d1.keys()):
-                            for epo in list(d1[dat].keys()):
-                                if method in list(d1[dat][epo].keys()):
-                                    for threshold in list(d1[dat][epo][method].keys()):
-                                        list_thresholds.append(threshold)
-                        list_thresholds = list(set(list_thresholds))
-                        if len(list_thresholds) > 1:
-                            error = "there should be only one threshold available\n" + str().ljust(5)
-                            error += "diagnostic: %s ; epoch length: %s ; project: %s" % (dia, dur, pro)
-                            error += " ; experiment: %s ; method: %s" % (exp, method)
-                            error += "\n" + str().ljust(5) + "thresholds: " + str(list_thresholds)
-                            print_fail(inspect__stack(), error)
-                        thr = list_thresholds[0]
-                        # get values per
-                        dict_t = {}
-                        for dat in list(dict_i[dia][dur][pro][exp].keys()):
-                            # res values are averaged across epochs (if the default parameters are used, exp = piControl
-                            # so there is ony one epoch)
-                            list_t = []
-                            for epo in list(dict_i[dia][dur][pro][exp][dat].keys()):
-                                if method in list(dict_i[dia][dur][pro][exp][dat][epo].keys()):
-                                    list_t.append(dict_i[dia][dur][pro][exp][dat][epo][method][thr])
-                            if len(list_t) > 0:
-                                dict_t[dat] = stat_compute_statistic(list_t, "mea")
-                        if len(list(dict_t.keys())) > 0:
-                            # if selected_model is available, save it as marker
-                            if selected_model in list(dict_t.keys()):
-                                dict_o = tool_put_in_dict(dict_o, dict_t[selected_model], dia, method, dur, pro, exp,
-                                                          "marker")
-                            # save the list of values as boxplot
-                            dict_o = tool_put_in_dict(dict_o, list(dict_t.values()), dia, method, dur, pro, exp,
-                                                      "boxplot")
+        # list epoch lengths
+        list_epoch_lengths = list(dict_i[dia].keys())
+        if len(list_epoch_lengths) > 1:
+            error = "there should be only one epoch length available\n" + str().ljust(5) + "diagnostic: %s" % dia
+            error += "\n" + str().ljust(5) + "epoch lengths: " + str(list_epoch_lengths)
+            print_fail(inspect__stack(), error)
+        dur = list_epoch_lengths[0]
+        for pro in list(dict_i[dia][dur].keys()):
+            # list experiments
+            list_experiments = list(dict_i[dia][dur][pro].keys())
+            if len(list_experiments) > 1:
+                error = "there should be only one experiment available\n" + str().ljust(5)
+                error += "diagnostic: %s ; epoch length: %s ; project: %s" % (dia, dur, pro)
+                error += "\n" + str().ljust(5) + "experiments: " + str(list_experiments)
+                print_fail(inspect__stack(), error)
+            exp = list_experiments[0]
+            # dictionary
+            d1 = dict_i[dia][dur][pro][exp]
+            # list methods
+            list_methods = list(set([method for dat in list(d1.keys()) for epo in list(d1[dat].keys())
+                                     for method in list(d1[dat][epo].keys())]))
+            for method in list_methods:
+                # list thresholds
+                list_thresholds = []
+                for dat in list(d1.keys()):
+                    for epo in list(d1[dat].keys()):
+                        if method in list(d1[dat][epo].keys()):
+                            for threshold in list(d1[dat][epo][method].keys()):
+                                list_thresholds.append(threshold)
+                list_thresholds = list(set(list_thresholds))
+                if len(list_thresholds) > 1:
+                    error = "there should be only one threshold available\n" + str().ljust(5)
+                    error += "diagnostic: %s ; epoch length: %s ; project: %s ; experiment: %s" % (dia, dur, pro, exp)
+                    error += " ; method: %s" % method
+                    error += "\n" + str().ljust(5) + "thresholds: " + str(list_thresholds)
+                    print_fail(inspect__stack(), error)
+                thr = list_thresholds[0]
+                # get values per dataset
+                dict_t = {}
+                for dat in list(dict_i[dia][dur][pro][exp].keys()):
+                    # res values are averaged across epochs (if the default parameters are used, exp = piControl so
+                    # there is ony one epoch)
+                    list_t = []
+                    for epo in list(dict_i[dia][dur][pro][exp][dat].keys()):
+                        if method in list(dict_i[dia][dur][pro][exp][dat][epo].keys()):
+                            list_t.append(dict_i[dia][dur][pro][exp][dat][epo][method][thr])
+                    if len(list_t) > 0:
+                        dict_t[dat] = stat_compute_statistic(list_t, "mea")
+                if len(list(dict_t.keys())) > 0:
+                    # if selected_model is available, save it as marker
+                    if selected_model in list(dict_t.keys()):
+                        dict_o = tool_put_in_dict(dict_o, dict_t[selected_model], dia, method, "marker")
+                    # save the list of values as boxplot
+                    dict_o = tool_put_in_dict(dict_o, list(dict_t.values()), dia, method, "boxplot")
     return dict_o
 
 
-def nest_influence_of_ensemble_size(dict_i: dict, ensemble_size_reference: str):
+def nest_influence_of_ensemble_size(dict_i: dict, ensemble_size_reference: str) -> dict:
     """
     Organize data to plot the influence of the ensemble size on the uncertainty of the ensemble mean
     
@@ -616,7 +628,7 @@ def nest_influence_of_ensemble_size(dict_i: dict, ensemble_size_reference: str):
     return dict_o
 
 
-def nest_influence_of_epoch_length(dict_i: dict, epoch_length_reference: str):
+def nest_influence_of_epoch_length(dict_i: dict, epoch_length_reference: str) -> dict:
     """
     Organize data to plot the influence of the epoch length on the uncertainty of the ensemble mean
     
@@ -692,7 +704,8 @@ def nest_influence_of_epoch_length(dict_i: dict, epoch_length_reference: str):
     return dict_o
 
 
-def nest_quality_control_distributions(dict_i: dict, data_experiments: list, reference_experiment: str = "piControl"):
+def nest_quality_control_distributions(dict_i: dict, data_experiments: list,
+                                       reference_experiment: str = "piControl") -> dict:
     # compute the difference between piControl mean and the other values
     dict_o = {}
     for dia in list(dict_i.keys()):
@@ -728,7 +741,7 @@ def nest_quality_control_distributions(dict_i: dict, data_experiments: list, ref
     return dict_o
 
 
-def nest_quality_control_time_series(dict_i: dict, data_epoch_length: str):
+def nest_quality_control_time_series(dict_i: dict, data_epoch_length: str) -> dict:
     # compute the difference with the first data_epoch_length of the time series and smooth time series using a
     # data_epoch_length * 12 + 1 triangular-weighted running average
     dict_o = {}

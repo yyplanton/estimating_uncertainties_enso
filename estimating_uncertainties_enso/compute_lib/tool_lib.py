@@ -24,7 +24,7 @@ from . check_lib import check_type, print_fail
 # ---------------------------------------------------------------------------------------------------------------------#
 # Functions
 # ---------------------------------------------------------------------------------------------------------------------#
-def tool_put_in_dict(dict_i: dict, value, *args):
+def tool_put_in_dict(dict_i: dict, value, *args) -> dict:
     """
     Put value in the dictionary
 
@@ -63,7 +63,7 @@ def tool_put_in_dict(dict_i: dict, value, *args):
     return dict_i
 
 
-def tool_read_json():
+def tool_read_json() -> dict:
     """
     Read the json file
 
@@ -113,8 +113,8 @@ def tool_read_netcdf(file_i, variable_i):
     for k in ["diagnostic_long_name", "diagnostic_short_name", "method", "units"]:
         att = array.attrs[k]
         if k == "diagnostic_short_name":
-            att = att.replace("AVE", r"$\bar{x}$").replace("SKE", "g$_1$").replace("STD", "s").replace("VAR", "s$^2$")
-            att = att.replace("n*", "n$^{*}$")
+            att = att.replace("AVE", r"$\bar{x}$").replace("SKE", "g$_1$").replace("STD", r"$\sigma$")
+            att = att.replace("VAR", r"$\sigma^2$").replace("n*", "n$^{*}$")
         else:
             att = att.replace("degC", "$^\circ$C").replace("C2", "C$^2$")
             att = att.replace("mm/day", "mm.day$^{-1}$").replace("mm2/day2", "mm$^{2}$.day$^{-2}$")
@@ -130,7 +130,7 @@ def tool_read_netcdf(file_i, variable_i):
     return array, metadata, dataset, member
 
 
-def tool_sort_members(dataset: str, list_members: list):
+def tool_sort_members(dataset: str, list_members: list) -> list:
     """
     Sort members
 
@@ -190,7 +190,24 @@ def tool_sort_members(dataset: str, list_members: list):
     return list_o
 
 
-def tool_tuple_for_dict(tuple_of_keys, tuple_of_last_key):
+def tool_tuple_for_dict(tuple_of_keys: tuple, tuple_of_last_key: tuple) -> (tuple, tuple):
+    """
+    Remove keys that reached the end of the list
+
+    Inputs:
+    -------
+    :param tuple_of_keys: tuple
+        Keys for nested dictionary
+    :param tuple_of_last_key: tuple
+        Keys of the last key of each nested level
+    
+    Outputs:
+    --------
+    :return tuple_of_keys: tuple
+        Keys for nested dictionary, with last key(s) removed
+    :param tuple_of_last_key: tuple
+        Keys of the last key of each nested level, with last key(s) removed
+    """
     # reverse the order of the tuple_of_last_key
     list_r = list(reversed(tuple_of_last_key))
     # check if the last key of a level has been reached, if yes, remove this level from the tuples

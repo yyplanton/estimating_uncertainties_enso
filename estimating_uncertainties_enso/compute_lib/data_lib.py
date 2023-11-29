@@ -23,7 +23,7 @@ from . tool_lib import tool_put_in_dict, tool_read_json, tool_read_netcdf, tool_
 # ---------------------------------------------------------------------------------------------------------------------#
 # Functions
 # ---------------------------------------------------------------------------------------------------------------------#
-def data_create_mme(dict_i: dict, project: str, data_mme_use_all_smiles: bool, data_mme_use_smile_mean: bool):
+def data_create_mme(dict_i: dict, project: str, data_mme_use_all_smiles: bool, data_mme_use_smile_mean: bool) -> dict:
     """
     Create multimodel ensemble
 
@@ -84,7 +84,7 @@ def data_create_mme(dict_i: dict, project: str, data_mme_use_all_smiles: bool, d
     return dict_o
 
 
-def data_one_smile_per_model(list_datasets):
+def data_one_smile_per_model(list_datasets) -> list:
     """
     Keep only one smile per model
 
@@ -121,7 +121,7 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
                        data_mme_create: bool = False, data_mme_use_all_smiles: bool = True,
                        data_mme_use_smile_mean: bool = False, data_observations_desired: dict = None,
                        data_smile_minimum_size: int = 1, data_smile_rejected: list = None,
-                       data_smile_require_all_experiments: bool = False, members_as_list: bool = True):
+                       data_smile_require_all_experiments: bool = False, members_as_list: bool = True) -> (dict, dict):
     """
     Read json dictionary and select values
 
@@ -298,7 +298,7 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
         method = dict_i[dia]["metadata"]["method"]
         name_long = dict_i[dia]["metadata"]["diagnostic_long_name"]
         name_short = dict_i[dia]["metadata"]["diagnostic_short_name"].replace("AVE", r"$\bar{x}$")
-        name_short = name_short.replace("SKE", "g$_1$").replace("STD", "s").replace("VAR", "s$^2$")
+        name_short = name_short.replace("SKE", "g$_1$").replace("STD", r"$\sigma$").replace("VAR", r"$\sigma^2$")
         name_short = name_short.replace("n*", "n$^{*}$")
         unit = dict_i[dia]["metadata"]["units"].replace("degC", "$^\circ$C").replace("C2", "C$^2$")
         unit = unit.replace("mm/day", "mm.day$^{-1}$").replace("mm2/day2", "mm$^{2}$.day$^{-2}$")
@@ -310,7 +310,7 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
 
 
 def data_organize_netcdf(data_diagnostics: list, data_projects: list, data_experiments: list,
-                         data_observations_desired: dict = None, members_as_list: bool = True):
+                         data_observations_desired: dict = None, members_as_list: bool = True) -> (dict, dict):
     """
     Read json dictionary and select values
 

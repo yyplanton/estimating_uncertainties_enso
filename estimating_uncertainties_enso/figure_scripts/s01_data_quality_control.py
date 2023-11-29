@@ -45,13 +45,7 @@ default = {
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
     # size of each panel
-    "fig_panel_size": {
-        "x_delt": 0,
-        "x_frac": 1,
-        "x_size": 16,
-        "y_delt": 3,
-        "y_frac": 0.2,
-        "y_size": 6},
+    "fig_panel_size": {"x_delt": 0, "x_frac": 1, "x_size": 16, "y_delt": 3, "y_frac": 0.2, "y_size": 6},
     # color per dataset
     "fig_colors": {
         # experiments
@@ -70,8 +64,8 @@ default = {
     "fig_cur_linecolor": "grey",
     "fig_cur_linestyle": "-",
     "fig_cur_linewidth": 1,
-    # plot ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "y_axis": {
             "ave_pr_val_n30e": [-0.8, 1.2], "ave_ts_val_n30e": [-0.8, 1.6], "ske_pr_ano_n30e": [-4.0, 5.0],
             "ske_ts_ano_n30e": [-1.4, 1.4], "var_pr_ano_n30e": [-3.0, 7.0], "var_ts_ano_n30e": [-1.0, 2.1],
@@ -79,7 +73,10 @@ default = {
         },
     },
     # plot titles
-    "fig_titles": default_parameters["fig_titles"],
+    "fig_titles": {
+        "x_axis": {"tim_ts_val_glob": "Year"},
+        **default_parameters["fig_titles"],
+    },
     # panel parameters (to modify default values in fig_panel.py)
     "panel_param_box": {"x_nbr_minor": 0},
     "panel_param_tim": {},
@@ -106,11 +103,11 @@ def s01_quality_control(data_diagnostics: list = default["data_diagnostics"],
                         fig_detailed_name: bool = default["fig_detailed_name"],
                         fig_format: str = default["fig_format"],
                         fig_panel_size: dict = default["fig_panel_size"],
-                        fig_ranges: dict = default["fig_ranges"],
+                        fig_ticks: dict = default["fig_ticks"],
                         fig_titles: dict = default["fig_titles"],
                         fig_years_per_panel: int = default["fig_years_per_panel"],
                         panel_param_box: dict = default["panel_param_box"],
-                        panel_param_tim: dict = default["panel_param_tim"]):
+                        panel_param_tim: dict = default["panel_param_tim"], **kwargs):
     #
     # -- Read json
     #
@@ -129,36 +126,24 @@ def s01_quality_control(data_diagnostics: list = default["data_diagnostics"],
     # compute the difference between piControl mean and the other values
     distributions_to_plot = nest_quality_control_distributions(values, data_experiments)
     time_series_to_plot = nest_quality_control_time_series(tim_values, data_epoch_lengths[0])
-    for dia in list(distributions_to_plot.keys()):
-        units = ""
-        if metadata[dia]["units"] != "":
-            units = "\n(" + str(metadata[dia]["units"]) + ")"
-        # x-axis
-        if "x_axis" not in list(fig_titles.keys()) or (
-                "x_axis" in list(fig_titles.keys()) and dia not in list(fig_titles["x_axis"].keys())):
+    for dia in list(distributions_to_plot.keys()) + list(time_series_to_plot.keys()):
+        # x title
+        if "x_axis" in list(fig_titles.keys()) and isinstance(fig_titles["x_axis"], dict) is True and \
+                dia in list(fig_titles["x_axis"].keys()) and isinstance(fig_titles["x_axis"][dia], str) is True:
+            pass
+        else:
             fig_titles = tool_put_in_dict(fig_titles, "", "x_axis", dia)
-        # y-axis
-        name = str(fig_titles[dia]["x"]) + " " + str(fig_titles[dia]["z"]) + str(units)
+        # y title
+        statistic = "" if fig_titles[dia]["z"] == "" else " " + str(fig_titles[dia]["z"])
+        units = "\n" if metadata[dia]["units"] == "" else "\n(" + str(metadata[dia]["units"]) + ")"
+        name = str(fig_titles[dia]["x"]) + str(statistic) + str(units)
         fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
-        # y ranges
-        list_ticks = None
-        if "y_axis" in list(fig_ranges.keys()) and dia in list(fig_ranges["y_axis"].keys()):
-            list_ticks = fig_ranges["y_axis"][dia]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, "y_axis", dia)
-    for dia in list(time_series_to_plot.keys()):
-        units = ""
-        if metadata[dia]["units"] != "":
-            units = " (" + str(metadata[dia]["units"]) + ")"
-        # x-axis
-        fig_titles = tool_put_in_dict(fig_titles, "Year", "x_axis", dia)
-        # y-axis
-        name = str(fig_titles[dia]["x"]) + str(units)
-        fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
-        # y ranges
-        list_ticks = None
-        if "y_axis" in list(fig_ranges.keys()) and dia in list(fig_ranges["y_axis"].keys()):
-            list_ticks = fig_ranges["y_axis"][dia]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, "y_axis", dia)
+        # y tics
+        if "y_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks, dict) is True and \
+                dia in list(fig_ticks["y_axis"].keys()) and isinstance(fig_ticks["y_axis"][dia], list) is True:
+            pass
+        else:
+            fig_ticks = tool_put_in_dict(fig_ticks, None, "y_axis", dia)
     #
     # -- Figure
     #
@@ -174,6 +159,6 @@ def s01_quality_control(data_diagnostics: list = default["data_diagnostics"],
             fig_name += str(len(data_epoch_lengths)) + "dur"
     fig_quality_control(distributions_to_plot, time_series_to_plot, data_diagnostics, fig_format, fig_name,
                         fig_box_linestyle, fig_box_linewidth, fig_box_mean_size, fig_box_outlier_size, fig_colors,
-                        fig_cur_linecolor, fig_cur_linestyle, fig_cur_linewidth, fig_panel_size, fig_ranges, fig_titles,
+                        fig_cur_linecolor, fig_cur_linestyle, fig_cur_linewidth, fig_panel_size, fig_ticks, fig_titles,
                         fig_years_per_panel, panel_param_box=panel_param_box, panel_param_tim=panel_param_tim)
 # ---------------------------------------------------------------------------------------------------------------------#

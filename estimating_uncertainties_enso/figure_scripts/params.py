@@ -51,9 +51,9 @@ default_parameters = {
     "uncertainty_confidence_interval": 95,
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": "normal",
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
     "uncertainty_combinations": int(1e4),
-    # number of resamples used for the bootstrap if uncertainty_theory is False
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     "uncertainty_resamples": int(1e6),
     # list of sample sizes for which the uncertainty will be computed
     "uncertainty_sample_sizes": [k for k in range(10, 101, 5)],
@@ -184,14 +184,14 @@ default_parameters = {
         "ave_ts_val": {"x": "SST", "y": "mean", "z": r"$\bar{x}$"},
         "ske_pr_ano": {"x": "PRA", "y": "skewness", "z": "g$_{1}$"},
         "ske_ts_ano": {"x": "SSTA", "y": "skewness", "z": "g$_{1}$"},
-        "var_pr_ano": {"x": "PRA", "y": "variance", "z": "s$^{2}$"},
-        "var_ts_ano": {"x": "SSTA", "y": "variance", "z": "s$^{2}$"},
+        "var_pr_ano": {"x": "PRA", "y": "variance", "z": r"$\sigma^{2}$"},
+        "var_ts_ano": {"x": "SSTA", "y": "variance", "z": r"$\sigma^{2}$"},
         "ave_pr_val_n30e": {"x": "N3 PR", "y": "mean", "z": r"$\bar{x}$"},
         "ave_ts_val_n30e": {"x": "N3 SST", "y": "mean", "z": r"$\bar{x}$"},
         "ske_pr_ano_n30e": {"x": "N3 PRA", "y": "skewness", "z": "g$_{1}$"},
         "ske_ts_ano_n30e": {"x": "N3 SSTA", "y": "skewness", "z": "g$_{1}$"},
-        "var_pr_ano_n30e": {"x": "N3 PRA", "y": "variance", "z": "s$^{2}$"},
-        "var_ts_ano_n30e": {"x": "N3 SSTA", "y": "variance", "z": "s$^{2}$"},
+        "var_pr_ano_n30e": {"x": "N3 PRA", "y": "variance", "z": r"$\sigma^{2}$"},
+        "var_ts_ano_n30e": {"x": "N3 SSTA", "y": "variance", "z": r"$\sigma^{2}$"},
         # time series
         "tim_ts_val_glob": {"x": "GMST", "y": "", "z": ""},
         "tim_ts_val_n30e": {"x": "N3 SST", "y": "", "z": ""},

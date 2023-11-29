@@ -41,11 +41,7 @@ default = {
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
     # size of each panel
-    "fig_panel_size": {
-        "x_frac": 0.04,
-        "y_delt": 3,
-        "y_frac": 0.1,
-        "y_size": 16},
+    "fig_panel_size": {"x_frac": 0.04, "y_delt": 3, "y_frac": 0.1, "y_size": 16},
     # color per dataset
     "fig_colors": {
         "piControl": "royalblue",
@@ -55,15 +51,17 @@ default = {
     "fig_linecolor": "k",
     "fig_linestyle": "-",
     "fig_linewidth": 0.5,
-    # plot ranges
-    "fig_ranges": {
-        "ave_ts_val_n30e": [23.7, 25.1],
-        "tim_ts_val_n30e": [20.0, 29.5],
+    # ticks
+    "fig_ticks": {
+        "y_axis": {
+            "ave_ts_val_n30e": [23.7, 25.1],
+            "tim_ts_val_n30e": [20.0, 29.5],
+        },
     },
     # plot titles
     "fig_titles": {
-        "x_axis": {"historical": "Time", "piControl": "Year"},
-        "y_axis": {"ave_ts_val_n30e": "N3 SST " + r"$\bar{x}$", "tim_ts_val_n30e": "N3 SST"},
+        "x_axis": {"historical": {"ave_ts_val_n30e": "Time"}, "piControl": {"ave_ts_val_n30e": "Year"}},
+        **default_parameters["fig_titles"],  # add diagnostics, experiments and absolute / relative uncertainty
     },
     # panel parameters (to modify default values in fig_panel.py)
     "panel_param": {"x_nbr_minor": 0, "title_col_y": 8},
@@ -85,10 +83,10 @@ def s02_creating_distributions(data_diagnostics: list = default["data_diagnostic
                                fig_linestyle: str = default["fig_linestyle"],
                                fig_linewidth: float = default["fig_linewidth"],
                                fig_panel_size: dict = default["fig_panel_size"],
-                               fig_ranges: dict = default["fig_ranges"],
                                fig_selected_model: str = default["fig_selected_model"],
+                               fig_ticks: dict = default["fig_ticks"],
                                fig_titles: dict = default["fig_titles"],
-                               panel_param: dict = default["panel_param"]):
+                               panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -137,6 +135,27 @@ def s02_creating_distributions(data_diagnostics: list = default["data_diagnostic
                                 arr_x = [arr_x] * len(arr_y)
                                 data_to_plot = tool_put_in_dict(data_to_plot, arr_x, dia, exp, "0000", "curve", "x")
                                 data_to_plot = tool_put_in_dict(data_to_plot, arr_y, dia, exp, "0000", "curve", "y")
+    for dia in list(values.keys()) + list(tim_values.keys()):
+        # x title
+        for exp in data_experiments:
+            if "x_axis" in list(fig_titles.keys()) and isinstance(fig_titles["x_axis"], dict) is True and \
+                    exp in list(fig_titles["x_axis"].keys()) and isinstance(fig_titles["x_axis"][exp], dict) is True \
+                    and dia in list(fig_titles["x_axis"][exp].keys()) and \
+                    isinstance(fig_titles["x_axis"][exp][dia], dict) is True:
+                pass
+            else:
+                fig_titles = tool_put_in_dict(fig_titles, "", "x_axis", exp, dia)
+        # y title
+        statistic = "" if fig_titles[dia]["z"] == "" else " " + str(fig_titles[dia]["z"])
+        units = "" if metadata[dia]["units"] == "" else " (" + str(metadata[dia]["units"]) + ")"
+        name = str(fig_titles[dia]["x"]) + str(statistic) + str(units)
+        fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
+        # y tics
+        if "y_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks, dict) is True and \
+                dia in list(fig_ticks["y_axis"].keys()) and isinstance(fig_ticks["y_axis"][dia], list) is True:
+            pass
+        else:
+            fig_ticks = tool_put_in_dict(fig_ticks, None, "y_axis", dia)
     #
     # -- Figure
     #
@@ -146,7 +165,7 @@ def s02_creating_distributions(data_diagnostics: list = default["data_diagnostic
         if fig_detailed_name is True:
             # add details of the computation to the figure name
             fig_name += "_data_" + str(len(data_projects)) + "pro_" + str(len(data_experiments)) + "exp"
-        fig_time_series_and_distributions(data_to_plot[dia], metadata, dia, data_epoch_lengths, data_experiments,
+        fig_time_series_and_distributions(data_to_plot[dia], dia, data_epoch_lengths, data_experiments,
                                           fig_format, fig_name, fig_colors, fig_linecolor, fig_linestyle, fig_linewidth,
-                                          fig_panel_size, fig_ranges, fig_titles, panel_param=panel_param)
+                                          fig_panel_size, fig_ticks, fig_titles, panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

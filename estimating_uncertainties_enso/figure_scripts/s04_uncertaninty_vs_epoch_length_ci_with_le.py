@@ -52,9 +52,9 @@ default = {
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": default_parameters["uncertainty_distribution"],
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
     "uncertainty_combinations": default_parameters["uncertainty_combinations"],
-    # number of resamples used for the bootstrap if uncertainty_theory is False: int [0, 1e10]
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     "uncertainty_resamples": default_parameters["uncertainty_resamples"],
     # list of sample sizes for which the uncertainty will be computed
     "uncertainty_sample_sizes": list(range(10, 51, 10)),
@@ -70,7 +70,7 @@ default = {
     "fig_format": default_parameters["fig_format"],
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
-    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = statistics)
+    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # position of the legend on the plot: bottom, right
     "fig_legend_position": default_parameters["fig_legend_position"],
@@ -89,8 +89,8 @@ default = {
     "fig_marker": "s",
     # marker size: all marker have the same size
     "fig_marker_size": 0.,
-    # ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "x_axis": {
             "maximum": [round(k / 10, 1) for k in list(range(2, 11, 2))],
             "minimum": list(range(30, 151, 30)),
@@ -151,11 +151,11 @@ def s04_epoch_length(data_diagnostics: list = default["data_diagnostics"],
                      fig_marker_size: float = default["fig_marker_size"],
                      fig_orientation: str = default["fig_orientation"],
                      fig_panel_size: dict = default["fig_panel_size"],
-                     fig_ranges: dict = default["fig_ranges"],
                      fig_smile_selected: str = default["fig_smile_selected"],
+                     fig_ticks: dict = default["fig_ticks"],
                      fig_titles: dict = default["fig_titles"],
                      fig_uncertainty_reference: str = default["fig_uncertainty_reference"],
-                     panel_param: dict = default["panel_param"]):
+                     panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -204,13 +204,12 @@ def s04_epoch_length(data_diagnostics: list = default["data_diagnostics"],
                     for siz in sample_sizes:
                         # select the same indices for all epoch lengths and epochs
                         # the goal is to compute the uncertainty each time as if the ensemble size was smaller
-                        nbr_combinations = deepcopy(uncertainty_combinations)
-                        idx = stat_combination_indices(ensemble_size, nbr_combinations, siz)
+                        idx = stat_combination_indices(ensemble_size, uncertainty_combinations, siz)
                         for dur in list(d1.keys()):
                             for epo in list(d1[dur].keys()):
                                 # select members
                                 sample = numpy__array(d1[dur][epo])[idx]
-                                for k in list(range(nbr_combinations)):
+                                for k in list(range(uncertainty_combinations)):
                                     # compute uncertainty for each combination of reduced ensemble
                                     val = stat_uncertainty_select_and_compute(
                                         sample[k], uncertainty_confidence_interval, uncertainty_distribution,
@@ -275,17 +274,26 @@ def s04_epoch_length(data_diagnostics: list = default["data_diagnostics"],
         if "y_axis" in list(fig_titles.keys()) and fig_uncertainty_reference in list(fig_titles["y_axis"].keys()):
             title = str(fig_titles[method]) + " " + str(fig_titles["y_axis"][fig_uncertainty_reference])
         fig_titles = tool_put_in_dict(fig_titles, title, "y_axis", dia)
-        # x-y tics
-        list_ticks = None
-        if "x_axis" in list(fig_ranges.keys()) and fig_uncertainty_reference in list(fig_ranges["x_axis"].keys()):
-            list_ticks = fig_ranges["x_axis"][fig_uncertainty_reference]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, "x_axis", dia)
-        list_ticks = None
-        if "y_axis" in list(fig_ranges.keys()) and fig_uncertainty_reference in list(fig_ranges["y_axis"].keys()) and \
-                fig_smile_selected in list(fig_ranges["y_axis"][fig_uncertainty_reference].keys()) and \
-                dia in list(fig_ranges["y_axis"][fig_uncertainty_reference][fig_smile_selected].keys()):
-            list_ticks = fig_ranges["y_axis"][fig_uncertainty_reference][fig_smile_selected][dia]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, "y_axis", dia)
+        # x tics
+        if "x_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks["x_axis"], dict) is True and \
+                dia in list(fig_ticks["x_axis"].keys()) and isinstance(fig_ticks["x_axis"][dia], list) is True:
+            pass
+        else:
+            list_ticks = None
+            if "x_axis" in list(fig_ticks.keys()) and fig_uncertainty_reference in list(fig_ticks["x_axis"].keys()):
+                list_ticks = fig_ticks["x_axis"][fig_uncertainty_reference]
+            fig_ticks = tool_put_in_dict(fig_ticks, list_ticks, "x_axis", dia)
+        # y tics
+        if "y_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks["y_axis"], dict) is True and \
+                dia in list(fig_ticks["y_axis"].keys()) and isinstance(fig_ticks["y_axis"][dia], list) is True:
+            pass
+        else:
+            list_ticks = None
+            if "y_axis" in list(fig_ticks.keys()) and fig_uncertainty_reference in list(fig_ticks["y_axis"].keys()) \
+                    and fig_smile_selected in list(fig_ticks["y_axis"][fig_uncertainty_reference].keys()) and \
+                    dia in list(fig_ticks["y_axis"][fig_uncertainty_reference][fig_smile_selected].keys()):
+                list_ticks = fig_ticks["y_axis"][fig_uncertainty_reference][fig_smile_selected][dia]
+            fig_ticks = tool_put_in_dict(fig_ticks, list_ticks, "y_axis", dia)
     # markers
     fig_markers = dict((siz, fig_marker) for siz in list(fig_colors.keys()))
     #
@@ -305,6 +313,6 @@ def s04_epoch_length(data_diagnostics: list = default["data_diagnostics"],
         fig_name += "_" + str(fig_orientation)
     fig_influence_of(uncertainties, data_diagnostics, data_experiments, fig_format, fig_name, fig_colors,
                      fig_legend_position, fig_linestyles, fig_linewidth, fig_linezorder, fig_markers, fig_marker_size,
-                     fig_orientation, fig_panel_size, fig_ranges, fig_titles, 10, "epoch_length",
+                     fig_orientation, fig_panel_size, fig_ticks, fig_titles, 10, "epoch_length",
                      fig_uncertainty_reference, panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

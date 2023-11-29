@@ -53,10 +53,10 @@ default = {
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": default_parameters["uncertainty_distribution"],
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
-    "uncertainty_combinations": default_parameters["uncertainty_combinations"],
-    # number of resamples used for the bootstrap if uncertainty_theory is False: int [0, 1e10]
-    "uncertainty_resamples": default_parameters["uncertainty_resamples"],
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
+    "uncertainty_combinations": int(1e3),  # default_parameters["uncertainty_combinations"],
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
+    "uncertainty_resamples": int(1e4),  # default_parameters["uncertainty_resamples"],
     #
     # -- Figure
     #
@@ -64,7 +64,7 @@ default = {
     "fig_format": default_parameters["fig_format"],
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
-    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = statistics)
+    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # size of each panel
     "fig_panel_size": {"x_delt": 6, "x_frac": 0.25, "x_size": 16, "y_delt": 5, "y_frac": 0.25, "y_size": 16},
@@ -72,8 +72,8 @@ default = {
     "fig_marker": "o",
     "fig_marker_color": "grey",
     "fig_marker_size": 50.,
-    # ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "absolute": {
             "ave_pr_val_n30e": [round(k / 100, 2) for k in list(range(0, 21, 5))],
             "ave_ts_val_n30e": [round(k / 100, 2) for k in list(range(0, 21, 5))],
@@ -116,9 +116,9 @@ def s03_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
                             fig_marker_size: float = default["fig_marker_size"],
                             fig_orientation: str = default["fig_orientation"],
                             fig_panel_size: dict = default["fig_panel_size"],
-                            fig_ranges: dict = default["fig_ranges"],
+                            fig_ticks: dict = default["fig_ticks"],
                             fig_titles: dict = default["fig_titles"],
-                            panel_param: dict = default["panel_param"]):
+                            panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -168,11 +168,15 @@ def s03_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
         # y-axis
         name = str(fig_titles[method]) + " from theory" + str(units)
         fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
-        # x-y ranges
-        list_ticks = None
-        if method is list(fig_ranges.keys()) and dia is list(fig_ranges[method].keys()):
-            list_ticks = fig_ranges[method][dia]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, dia)
+        # x-y tics
+        if dia in list(fig_ticks.keys()) and isinstance(fig_ticks[dia], list) is True:
+            pass
+        else:
+            list_ticks = None
+            if method in list(fig_ticks.keys()) and isinstance(fig_ticks[method], dict) is True and \
+                    dia in list(fig_ticks[method].keys()) and isinstance(fig_ticks[method][dia], list) is True:
+                list_ticks = fig_ticks[method][dia]
+            fig_ticks = tool_put_in_dict(fig_ticks, list_ticks, dia)
     #
     # -- Figure
     #
@@ -191,6 +195,6 @@ def s03_theory_vs_bootstrap(data_diagnostics: list = default["data_diagnostics"]
         fig_name += "_" + str(uncertainty_distribution) + "_distribution"
         fig_name += "_" + str(fig_orientation)
     fig_scatter_and_regression(data_to_plot, data_diagnostics, fig_format, fig_name, fig_colors, fig_markers,
-                               fig_marker_size, fig_orientation, fig_panel_size, fig_ranges, fig_titles,
+                               fig_marker_size, fig_orientation, fig_panel_size, fig_ticks, fig_titles,
                                fig_legend_bool=False, panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

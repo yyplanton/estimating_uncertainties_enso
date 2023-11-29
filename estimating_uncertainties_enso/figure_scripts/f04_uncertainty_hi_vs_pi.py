@@ -55,9 +55,9 @@ default = {
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": default_parameters["uncertainty_distribution"],
-    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [0, 1e10]
+    # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
     "uncertainty_combinations": default_parameters["uncertainty_combinations"],
-    # number of resamples used for the bootstrap if uncertainty_theory is False: int [0, 1e10]
+    # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     "uncertainty_resamples": default_parameters["uncertainty_resamples"],
     # first epoch, last epoch or averaged across epochs used for historical experiments
     "uncertainty_historical_epoch": "averaged",
@@ -68,7 +68,7 @@ default = {
     "fig_format": default_parameters["fig_format"],
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
-    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = statistics)
+    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # position of the legend on the plot: bottom, right
     "fig_legend_position": default_parameters["fig_legend_position"],
@@ -80,16 +80,26 @@ default = {
     "fig_markers": default_parameters["fig_markers"],
     # marker size: all marker have the same size
     "fig_marker_size": 60.,
-    # ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "absolute": {
             "averaged": {
-                "ave_pr_val_n30e": [round(ii / 100, 2) for ii in list(range(1, 18, 4))],
-                "ave_ts_val_n30e": [round(ii / 100, 2) for ii in list(range(2, 11, 2))],
-                "ske_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(5, 86, 20))],
-                "ske_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(5, 26, 5))],
-                "var_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 101, 25))],
-                "var_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(2, 23, 5))],
+                10: {
+                    "ave_pr_val_n30e": [round(ii / 100, 2) for ii in list(range(1, 18, 4))],
+                    "ave_ts_val_n30e": [round(ii / 100, 2) for ii in list(range(1, 10, 2))],
+                    "ske_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 81, 20))],
+                    "ske_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(2, 23, 5))],
+                    "var_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 101, 25))],
+                    "var_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 21, 5))],
+                },
+                15: {
+                    "ave_pr_val_n30e": [round(ii / 100, 2) for ii in list(range(0, 9, 2))],
+                    "ave_ts_val_n30e": [round(ii / 100, 2) for ii in list(range(0, 9, 2))],
+                    "ske_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 61, 15))],
+                    "ske_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(2, 23, 5))],
+                    "var_pr_ano_n30e": [round(ii / 100, 2) for ii in list(range(0, 61, 15))],
+                    "var_ts_ano_n30e": [round(ii / 100, 2) for ii in list(range(2, 19, 4))],
+                },
             },
         },
     },
@@ -129,9 +139,9 @@ def f04_hi_vs_pi(data_diagnostics: list = default["data_diagnostics"],
                  fig_marker_size: float = default["fig_marker_size"],
                  fig_orientation: str = default["fig_orientation"],
                  fig_panel_size: dict = default["fig_panel_size"],
-                 fig_ranges: dict = default["fig_ranges"],
+                 fig_ticks: dict = default["fig_ticks"],
                  fig_titles: dict = default["fig_titles"],
-                 panel_param: dict = default["panel_param"]):
+                 panel_param: dict = default["panel_param"], **kwargs):
     #
     # -- Read json
     #
@@ -168,12 +178,16 @@ def f04_hi_vs_pi(data_diagnostics: list = default["data_diagnostics"],
             name += str(uncertainty_historical_epoch) + "\nepoch"
         name += str(units)
         fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
-        # x-y ranges
-        list_ticks = None
-        if method in list(fig_ranges.keys()) and uncertainty_historical_epoch in list(fig_ranges[method].keys()) and \
-                dia in list(fig_ranges[method][uncertainty_historical_epoch].keys()):
-            list_ticks = fig_ranges[method][uncertainty_historical_epoch][dia]
-        fig_ranges = tool_put_in_dict(fig_ranges, list_ticks, dia)
+        # x-y tics
+        if dia in list(fig_ticks.keys()):
+            pass
+        else:
+            list_ticks = None
+            if method in list(fig_ticks.keys()) and uncertainty_historical_epoch in list(fig_ticks[method].keys()) and \
+                    data_smile_minimum_size in list(fig_ticks[method][uncertainty_historical_epoch].keys()) and \
+                    dia in list(fig_ticks[method][uncertainty_historical_epoch][data_smile_minimum_size].keys()):
+                list_ticks = fig_ticks[method][uncertainty_historical_epoch][data_smile_minimum_size][dia]
+            fig_ticks = tool_put_in_dict(fig_ticks, list_ticks, dia)
     #
     # -- Figure
     #
@@ -199,6 +213,6 @@ def f04_hi_vs_pi(data_diagnostics: list = default["data_diagnostics"],
         fig_name += "_" + str(uncertainty_historical_epoch) + "_epoch"
         fig_name += "_" + str(fig_orientation)
     fig_scatter_and_regression(uncertainties, data_diagnostics, fig_format, fig_name, fig_colors, fig_markers,
-                               fig_marker_size, fig_orientation, fig_panel_size, fig_ranges, fig_titles,
+                               fig_marker_size, fig_orientation, fig_panel_size, fig_ticks, fig_titles,
                                fig_legend_position=fig_legend_position, panel_param=panel_param)
 # ---------------------------------------------------------------------------------------------------------------------#

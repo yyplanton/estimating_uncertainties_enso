@@ -261,7 +261,7 @@ def stat_compute_statistic(arr_i, statistic: str):
     return arr_o
 
 
-def stat_regression(arr_i1, arr_i2):
+def stat_regression(arr_i1, arr_i2) -> (float, float, float, float):
     """
     Compute the linear least-squares regression between the two given arrays
     
@@ -297,7 +297,7 @@ def stat_regression(arr_i1, arr_i2):
 
 def stat_res_based_on_obs(arr_model, arr_obs: float, maximum_res: int, uncertainty_confidence_interval: float,
                           uncertainty_distribution: str, uncertainty_combinations: int, uncertainty_resamples: int,
-                          uncertainty_theory: bool):
+                          uncertainty_theory: bool) -> int:
     """
     Compute the required ensemble size to know the sign of the bias (using combinations of model members)
     
@@ -337,6 +337,10 @@ def stat_res_based_on_obs(arr_model, arr_obs: float, maximum_res: int, uncertain
     print_fail(inspect__stack(), "\n".join(k for k in error))
     # compute the sign of the bias using the largest accepted ensemble size
     low, res = 0, min(len(arr_model), maximum_res)
+    if uncertainty_theory is True:
+        # if the uncertainty is computed using the theory, the variance of the sample will be computed. It cannot be
+        # computed if the sample size is smaller than 2
+        low = 1
     is_true = stat_uncertainties_smaller_than_difference(
         arr_model, arr_obs, uncertainty_confidence_interval, uncertainty_distribution, uncertainty_combinations,
         uncertainty_resamples, uncertainty_theory, res)
@@ -363,7 +367,7 @@ def stat_res_based_on_obs(arr_model, arr_obs: float, maximum_res: int, uncertain
 
 
 def stat_res_bootstrap(arr_i, res_maximum: int, uncertainty_confidence_interval: float, uncertainty_resamples: int,
-                       uncertainty_threshold: float):
+                       uncertainty_threshold: float) -> int:
     """
     Compute the required ensemble size to obtain the given uncertainty of the ensemble mean (using bootstrap)
 
@@ -414,7 +418,8 @@ def stat_res_bootstrap(arr_i, res_maximum: int, uncertainty_confidence_interval:
     return res
 
 
-def stat_res_theory(arr_i, maximum_res: int, uncertainty_confidence_interval: float, uncertainty_threshold: float):
+def stat_res_theory(arr_i, maximum_res: int, uncertainty_confidence_interval: float,
+                    uncertainty_threshold: float) -> int:
     """
     Compute the required ensemble size to obtain the given uncertainty of the ensemble mean (using the standard error of
     the mean).
@@ -513,7 +518,7 @@ def stat_smooth_triangle(arr_i, window: int):
 def stat_uncertainties_smaller_than_difference(arr_model, arr_obs, uncertainty_confidence_interval: float,
                                                uncertainty_distribution: str, uncertainty_combinations: int,
                                                uncertainty_resamples: int, uncertainty_theory: bool,
-                                               uncertainty_sample_size: int):
+                                               uncertainty_sample_size: int) -> bool:
     """
     Compute the uncertainty of the ensemble mean using given sample size, as well as the threshold for this uncertainty
     This is the case where the uncertainty of the ensemble mean need to be smaller than the difference model-obs
@@ -581,7 +586,7 @@ def stat_uncertainties_smaller_than_difference(arr_model, arr_obs, uncertainty_c
 
 
 def stat_uncertainty_bootstrap(arr_i, uncertainty_confidence_interval: float, uncertainty_relative: bool,
-                               uncertainty_resamples: int, uncertainty_sample_size: int):
+                               uncertainty_resamples: int, uncertainty_sample_size: int) -> float:
     """
     Compute the uncertainty of the sample mean (using a boostrap)
 
@@ -623,7 +628,7 @@ def stat_uncertainty_bootstrap(arr_i, uncertainty_confidence_interval: float, un
 def stat_uncertainty_select_and_compute(arr_i, uncertainty_confidence_interval: float, uncertainty_distribution: str,
                                         uncertainty_relative: bool, uncertainty_combinations: int,
                                         uncertainty_resamples: int, uncertainty_theory: bool,
-                                        uncertainty_sample_size: int):
+                                        uncertainty_sample_size: int) -> float:
     """
     Compute the uncertainty of the sample mean, either using the theory or a bootstrap
 
@@ -674,7 +679,8 @@ def stat_uncertainty_select_and_compute(arr_i, uncertainty_confidence_interval: 
 
 
 def stat_uncertainty_theory(arr_i, uncertainty_confidence_interval: float, uncertainty_relative: bool,
-                            uncertainty_combinations: int, uncertainty_sample_size: int, uncertainty_distribution: str):
+                            uncertainty_combinations: int, uncertainty_sample_size: int,
+                            uncertainty_distribution: str) -> float:
     """
     Compute the uncertainty of the sample mean (using the theory, i.e., the standard error).
     E.g., Chapter 5 p. 92 of von Storch and Zwiers (1999; https://doi.org/10.1017/CBO9780511612336)
@@ -698,7 +704,7 @@ def stat_uncertainty_theory(arr_i, uncertainty_confidence_interval: float, uncer
 
     Output:
     -------
-    :return: float or ndarray
+    :return: float
         Uncertainty of the sample mean computed using the theory
     """
     # check input
@@ -727,7 +733,7 @@ def stat_uncertainty_theory(arr_i, uncertainty_confidence_interval: float, uncer
     return uncertainty
 
 
-def stat_zscore(sample_size, confidence_interval: float, distribution: str):
+def stat_zscore(sample_size, confidence_interval: float, distribution: str) -> float:
     """
     Compute the distribution's zscore for the given significance_level
 

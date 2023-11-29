@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from numpy import linspace as numpy__linspace
 # estimating_uncertainties_enso package
 from . fig_panel import default_map, default_plot, plot_main, plot_map
-from . fig_tools import _tool_axis_label, tool_figure_axis, tool_figure_initialization, tool_legend_datasets, tool_title
+from . fig_tools import tool_axis_label, tool_figure_axis, tool_figure_initialization, tool_legend_datasets, tool_title
 from estimating_uncertainties_enso.compute_lib.check_lib import plural_s
 from estimating_uncertainties_enso.compute_lib.stat_lib import stat_regression
 # ---------------------------------------------------#
@@ -31,10 +31,65 @@ from estimating_uncertainties_enso.compute_lib.stat_lib import stat_regression
 # ---------------------------------------------------------------------------------------------------------------------#
 # Figure templates
 # ---------------------------------------------------------------------------------------------------------------------#
-def fig_examples_of_res(dict_i: dict, data_diagnostics: list, figure_format: str, figure_name: str, fig_colors: dict,
+def fig_examples_of_res(dict_i: dict, data_diagnostics: list, fig_format: str, fig_name: str, fig_colors: dict,
                         fig_markers: dict, fig_marker_size: float, fig_orientation: str, fig_panel_size: dict,
-                        fig_ranges: dict, fig_selected_model: str, fig_titles: dict, fig_title_bool: bool = True,
+                        fig_selected_model: str, fig_ticks: dict, fig_titles: dict, fig_title_bool: bool = True,
                         panel_param: dict = None):
+    """
+    Template for F5: required ensemble size (RES) to limit the uncertainty to a desired value (uncertainty defined
+    using 3 different methods)
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with three nested levels [diagnostic, method, boxplot-or-marker], filled with the data to plot
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_colors: dict
+        Dictionary with one level [key], filled with the color to plot each key;
+        e.g., fig_colors = {'unc': 'b', 'obs': 'k', 'mme': 'r', fig_selected_model: 'g'}
+    :param fig_markers: dict
+        Dictionary with on level [key], filled with the marker to plot each key;
+        e.g., fig_markers = {fig_selected_model: '>'}
+    :param fig_marker_size: float
+        Size of the markers; e.g., fig_marker_size = 60.
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {'x_delt': 2, 'x_frac': 0.5, 'x_size': 5, 'y_delt': 3, 'y_frac': 0.5, 'y_size': 8}
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_selected_model: str
+        Name of the model selected to be plotted as a marker; e.g., fig_selected_model = 'IPSL-CM6A-LR'
+    :param fig_ticks: dict
+        Dictionary defining the range and tics of axes; e.g., fig_ticks = {'x_axis': [0, 1], 'y_axis': [0, 1, 2, 3, 4]}
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'ave_pr_val_n30e': ''},
+            'y_axis': {'ave_pr_val_n30e': 'ensemble size'},
+        }
+    :param fig_title_bool: bool, optional
+        True to plot titles of columns and rows; e.g., fig_title_bool = True
+        Default is True
+    :param panel_param: dict, optional
+        Dictionary to modify default values of panel parameters (see fig_panel.py);
+        e.g., panel_param = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    """
     if panel_param is None:
         panel_param = {}
     # plot initialization
@@ -53,20 +108,17 @@ def fig_examples_of_res(dict_i: dict, data_diagnostics: list, figure_format: str
         # data to plot
         box_c, box_x, box_y, mar_c, mar_m, mar_s, mar_x, mar_y = [], [], [], [], [], [], [], []
         for ii, method in enumerate(list(fig_titles["x_axis"][dia].keys())):
-            for dur in list(d1[method].keys()):
-                for pro in list(d1[method][dur].keys()):
-                    for exp in list(d1[method][dur][pro].keys()):
-                        for typ in list(d1[method][dur][pro][exp].keys()):
-                            if typ == "boxplot":
-                                box_c.append(fig_colors[method])
-                                box_x.append(ii)
-                                box_y.append(d1[method][dur][pro][exp][typ])
-                            else:
-                                mar_c.append(fig_colors[fig_selected_model])
-                                mar_m.append(fig_markers[fig_selected_model])
-                                mar_s.append(fig_marker_size)
-                                mar_x.append(ii + 0.2)
-                                mar_y.append(d1[method][dur][pro][exp][typ])
+            for typ in list(d1[method].keys()):
+                if typ == "boxplot":
+                    box_c.append(fig_colors[method])
+                    box_x.append(ii)
+                    box_y.append(d1[method][typ])
+                else:
+                    mar_c.append(fig_colors[fig_selected_model])
+                    mar_m.append(fig_markers[fig_selected_model])
+                    mar_s.append(fig_marker_size)
+                    mar_x.append(ii + 0.2)
+                    mar_y.append(d1[method][typ])
         kwarg.update({"box_c": box_c, "box_x": box_x, "box_y": box_y, "mar_cf": mar_c, "mar_m": mar_m, "mar_s": mar_s,
                       "mar_x": mar_x, "mar_y": mar_y})
         # title
@@ -74,13 +126,13 @@ def fig_examples_of_res(dict_i: dict, data_diagnostics: list, figure_format: str
             kwarg["title"] = numbering[jj]
             kwarg["title_col"], kwarg["title_row"] = tool_title(fig_titles[dia], jj, n_panel_per_line, fig_orientation)
         # x-axis
-        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ranges["x_axis"], arr_i=box_x)
+        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ticks["x_axis"], arr_i=box_x)
         kwarg["x_lab"] = [""] * len(kwarg["x_lab"])
         kwarg["x_lim"][0] -= 0.5
         kwarg["x_lim"][1] += 0.5
         # y-axis
-        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ranges["y_axis"], arr_i=box_y)
-        kwarg["y_nam"] = fig_titles["y_axis"] if jj % n_panel_per_line == 0 else ""
+        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"], arr_i=box_y)
+        kwarg["y_nam"] = fig_titles["y_axis"][dia] if jj % n_panel_per_line == 0 else ""
         x1, x2, y1, y2 = kwarg["x_lim"] + kwarg["y_lim"]
         dx, dy = (x2 - x1) / 100, (y2 - y1) / 100
         # x-axis labels in color
@@ -102,19 +154,97 @@ def fig_examples_of_res(dict_i: dict, data_diagnostics: list, figure_format: str
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 
 
-def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: list, figure_format: str, figure_name: str,
+def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: list, fig_format: str, fig_name: str,
                      fig_colors: dict, fig_legend_position: str, fig_linestyles: dict, fig_linewidth: float,
                      fig_linezorder: int, fig_markers: dict, fig_marker_size: float, fig_orientation: str,
-                     fig_panel_size: dict, fig_ranges: dict, fig_titles: dict, smile_minimum_size: int,
+                     fig_panel_size: dict, fig_ticks: dict, fig_titles: dict, smile_minimum_size: int,
                      uncertainty_influence: str, uncertainty_reference: str, fig_legend_bool: bool = True,
                      fig_title_bool: bool = True, panel_param: dict = None):
+    """
+    Template for F2, F3 and S4: influence of ensemble size of epoch length on the uncertainty of the ensemble mean
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with four nested levels [diagnostic, dataset, experiment, key], filled with the data to plot
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param data_experiments: list
+        Names of experiment (to keep them in the right order); e.g., data_experiments = ['piControl', 'historical']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_colors: dict
+        Dictionary with one level [dataset], filled with the color to plot each dataset;
+        e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
+    :param fig_legend_position: str
+        Position of the legend; e.g., fig_legend_position = 'bottom'
+        Two legend positions are accepted: 'bottom', 'right'
+    :param fig_linestyles: dict
+        Dictionary with one level [experiment], filled with the color to plot each experiment;
+        e.g., fig_linestyles = {'historical": '-', 'piControl': ':'}
+    :param fig_linewidth: float
+        Width of the lines; e.g., fig_linewidth = 1.
+    :param fig_linezorder: int
+        zorder of the lines; e.g., fig_linezorder = 1
+    :param fig_markers: dict
+        Dictionary with one level [dataset], filled with the marker to plot each dataset;
+        e.g., fig_markers = {'ACCESS-CM2': '>', 'ACCESS-ESM1-5': '<'}
+    :param fig_marker_size: float
+        Size of the markers; e.g., fig_marker_size = 60.
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {'x_delt': 2, 'x_frac': 0.5, 'x_size': 5, 'y_delt': 3, 'y_frac': 0.5, 'y_size': 8}
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_ticks: dict
+        Dictionary with two nested levels [x-or-y_axis, diagnostic], filled with a list of tics;
+        e.g., fig_ticks = {'x_axis': {'ave_pr_val_n30e': [0, 1]}, 'y_axis': {'ave_pr_val_n30e': [0, 1, 2, 3, 4]}}
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'ave_pr_val_n30e': ''},
+            'y_axis': {'ave_pr_val_n30e': ''},
+        }
+    :param smile_minimum_size: int
+        Minimum number of member for SMILEs (used for the legend); e.g., smile_minimum_size = 10
+    :param uncertainty_influence: str
+        Influence plotted (used to select plot legend); e.g., uncertainty_reference = 'ensemble_size'
+        Two influences are recognized: 'ensemble_size', 'epoch_length'
+        Other values will have no effect
+    :param uncertainty_reference: str
+        Reference plotted (used to select plot legend); e.g., uncertainty_reference = 'maximum'
+        One reference is recognized: 'maximum'
+        Other values will have no effect
+    :param fig_legend_bool: bool, optional
+        True to plot the datasets legend; e.g., fig_legend_bool = True
+        Default is True
+    :param fig_title_bool: bool, optional
+        True to plot titles of columns and rows; e.g., fig_title_bool = True
+        Default is True
+    :param panel_param: dict, optional
+        Dictionary to modify default values of panel parameters (see fig_panel.py);
+        e.g., panel_param = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    """
     if panel_param is None:
         panel_param = {}
     # plot initialization
@@ -167,14 +297,14 @@ def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: lis
             kwarg["title_col"], kwarg["title_row"] = tool_title(fig_titles[dia], jj, n_panel_per_line, fig_orientation)
         # x-axis
         kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(
-            fig_ranges["x_axis"][dia], arr_i=cur_x + mar_x)
-        if uncertainty_reference == "maximum" and fig_ranges["x_axis"][dia] is not None:
+            fig_ticks["x_axis"][dia], arr_i=cur_x + mar_x)
+        if uncertainty_reference == "maximum" and fig_ticks["x_axis"][dia] is not None:
             kwarg["x_lim"][0] -= 0.1
         if jj > len(list_dia) - n_panel_per_line - 1:
             kwarg["x_nam"] = fig_titles["x_axis"][dia]
         # y-axis
         kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(
-            fig_ranges["y_axis"][dia], arr_i=cur_y + mar_y + sha_y1 + sha_y2)
+            fig_ticks["y_axis"][dia], arr_i=cur_y + mar_y + sha_y1 + sha_y2)
         if jj % n_panel_per_line == 0:
             kwarg["y_nam"] = fig_titles["y_axis"][dia]
         # legend
@@ -210,8 +340,7 @@ def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: lis
         # add markers and dataset names at the bottom or top right of the figure
         if fig_legend_bool is True:
             tool_legend_datasets(d1, fig_colors, fig_markers, leg_d, leg_t, list_dia, jj, n_panel_per_line,
-                                 fig_legend_position, x_frac, x_size, y_frac, y_size,
-                                 uncertainty_reference=uncertainty_reference)
+                                 fig_legend_position, x_frac, x_size, y_frac, y_size)
         kwarg.update({"legend_param": leg_d, "legend_txt": leg_t})
         # theoretical relationship
         lx = list(numpy__linspace(min(kwarg["x_lim"]), max(kwarg["x_lim"]), 50))
@@ -237,17 +366,82 @@ def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: lis
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 
 
-def fig_presentation_uncertainties(dict_i: dict, dict_meta: dict, data_diagnostics: list, figure_format: str,
-                                   figure_name: str, fig_colors: dict, fig_legend_position: str, fig_linestyle: str,
-                                   fig_linewidth: float, fig_orientation: str, fig_panel_size: dict, fig_ranges: dict,
-                                   fig_titles: dict, panel_param_box: dict = None, panel_param_map: dict = None):
+def fig_presentation_uncertainties(dict_i: dict, data_diagnostics: list, fig_format: str, fig_name: str,
+                                   fig_colors: dict, fig_legend_position: str, fig_linestyle: str, fig_linewidth: float,
+                                   fig_orientation: str, fig_panel_size: dict, fig_ticks: dict, fig_titles: dict,
+                                   panel_param_box: dict = None, panel_param_map: dict = None):
+    """
+    Template for F1: Maps of observed statistical moments and distributions of observed and modeled statistical moments
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with three nested levels [diagnostic, boxplot-or-curve-or-map, dataset], filled with the data to plot
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_colors: dict
+        Dictionary with one level [dataset], filled with the color to plot each dataset;
+        e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
+    :param fig_legend_position: str
+        Position of the legend; e.g., fig_legend_position = 'bottom'
+        Two legend positions are accepted: 'bottom', 'right'
+    :param fig_linestyle: str
+        Style of the lines; e.g., fig_linestyle = '-'
+    :param fig_linewidth: float
+        Width of the lines; e.g., fig_linewidth = 1.
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {
+            'x_delt_box': 4, 'x_frac_box': 0.25, 'x_size_box': 6, 'y_delt_box': 2, 'y_frac_box': 0.25, 'y_size_box': 12,
+            'x_delt_map': 3, 'x_size_map': 32, 'y_size_map': 8,
+        }
+        'box' and 'map' correspond respectively to boxplot and map panels
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_ticks: dict
+        Dictionary with two nested levels [x-or-y-or-z_axis, diagnostic], filled with a list of tics;
+        e.g., fig_ticks = {
+            'x_axis': {'ave_pr_val_n30e': [0, 1]},
+            'y_axis': {'ave_pr_val_n30e': [0, 1, 2, 3, 4]},
+            'z_axis': {'ave_pr_val': [0, 2, 4, 6, 8]},
+        }
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'ave_pr_val_n30e': ''},
+            'y_axis': {'ave_pr_val_n30e': ''},
+            'z_axis': {'ave_pr_val': 'N3 PR xbar (mm/day)'},
+        }
+    :param panel_param_box: dict, optional
+        Dictionary to modify default values of panel parameters for boxplots (see fig_panel.py);
+        e.g., panel_param_box = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    :param panel_param_map: dict, optional
+        Dictionary to modify default values of panel parameters for maps (see fig_panel.py);
+        e.g., panel_param_map = {'title_row_x': 30}
+        Default is None (no modification of the default values)
+    """
     if panel_param_box is None:
         panel_param_box = {}
     if panel_param_map is None:
@@ -291,11 +485,9 @@ def fig_presentation_uncertainties(dict_i: dict, dict_meta: dict, data_diagnosti
         kwarg["sha_s"] = d1["map"][dataset][0]
         kwarg["sha_cs"] = fig_colors[tmp]
         kwarg["legend"] = deepcopy(fig_legend_position)
-        kwarg["s_tic"] = fig_ranges[tmp]
-        kwarg["s_lab"] = _tool_axis_label(kwarg["s_tic"])
-        kwarg["s_nam"] = dict_meta[tmp]["name_short"]
-        if dict_meta[tmp]["units"] != "":
-            kwarg["s_nam"] += " (" + str(dict_meta[tmp]["units"]) + ")"
+        kwarg["s_tic"] = fig_ticks["z_axis"][tmp]
+        kwarg["s_lab"] = tool_axis_label(kwarg["s_tic"])
+        kwarg["s_nam"] = fig_titles["z_axis"][tmp]
         # regions
         kwarg["region"] = [dia[-4:]]
         # projection
@@ -333,12 +525,13 @@ def fig_presentation_uncertainties(dict_i: dict, dict_meta: dict, data_diagnosti
         kwarg["title"] = numbering[counter]
         kwarg["title_col"], _ = tool_title(fig_titles[dia], jj, n_panel_per_line, fig_orientation)
         # x-axis
-        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ranges["x_axis"], arr_i=box_x + cur_x)
+        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ticks["x_axis"], arr_i=box_x + cur_x)
         kwarg["x_lab"] = [""] * len(kwarg["x_lab"])
         kwarg["x_lim"][0] -= 0.5
         kwarg["x_lim"][1] += 0.5
         # y-axis
-        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ranges[dia], arr_i=box_y + cur_y)
+        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(
+            fig_ticks["y_axis"][dia], arr_i=box_y + cur_y)
         # x-axis labels in color
         if jj > len(list_dia) - n_panel_per_line - 1:
             txt, txt_c, txt_x, txt_y = [], [], [], []
@@ -360,18 +553,84 @@ def fig_presentation_uncertainties(dict_i: dict, dict_meta: dict, data_diagnosti
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 
 
-def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_diagnostics: list, figure_format: str,
-                        figure_name: str, fig_box_linestyle: str, fig_box_linewidth: float, fig_box_mean_size: float,
+def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_diagnostics: list, fig_format: str,
+                        fig_name: str, fig_box_linestyle: str, fig_box_linewidth: float, fig_box_mean_size: float,
                         fig_box_outlier_size: float, fig_colors: dict, fig_cur_linecolor: str, fig_cur_linestyle: str,
-                        fig_cur_linewidth: float, fig_panel_size: dict, fig_ranges: dict, fig_titles: dict,
+                        fig_cur_linewidth: float, fig_panel_size: dict, fig_ticks: dict, fig_titles: dict,
                         fig_years_per_panel: int, panel_param_box: dict = None, panel_param_tim: dict = None):
+    """
+    Template for S1: Time series and boxplots of all diagnostics of all datasets
+    
+    Inputs:
+    -------
+    :param dict_distributions: dict
+        Dictionary with four nested levels [diagnostic, experiment, boxplot-or-marker, x-or-y], filled with the data to
+        plot as boxplots or markers
+    :param dict_time_series: dict
+        Dictionary with four nested levels [diagnostic, dataset, curve, x-or-y], filled with the data to plot as curves
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_box_linestyle: str
+        Style of the lines for boxplots; e.g., fig_box_linestyle = '-'
+    :param fig_box_linewidth: float
+        Width of the lines for boxplots; e.g., fig_box_linewidth = 1.
+    :param fig_box_mean_size: float
+        Size of the mean markers for boxplots; e.g., fig_box_mean_size = 10.
+    :param fig_box_outlier_size: float
+        Size of the outlier markers for boxplots; e.g., fig_box_outlier_size = 2.
+    :param fig_colors: dict
+        Dictionary with one level [dataset], filled with the color to plot each dataset;
+        e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
+    :param fig_cur_linecolor: str
+        Color of the lines for time series; e.g., fig_cur_linecolor = 'grey'
+    :param fig_cur_linestyle: str
+        Style of the lines for time series; e.g., fig_cur_linestyle = '-'
+    :param fig_cur_linewidth: float
+        Width of the lines for ime series; e.g., fig_cur_linewidth = 1.
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {'x_delt': 2, 'x_frac': 0.5, 'x_size': 5, 'y_delt': 3, 'y_frac': 0.5, 'y_size': 8}
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_ticks: dict
+        Dictionary with two nested levels [x-or-y_axis, diagnostic], filled with a list of tics;
+        e.g., fig_ticks = {
+            'x_axis': {'ave_pr_val_n30e': [0, 1]},
+            'y_axis': {'ave_pr_val_n30e': [0, 1, 2, 3, 4]},
+        }
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'ave_pr_val_n30e': ''},
+            'y_axis': {'ave_pr_val_n30e': 'N3 PR xbar (mm/day)'},
+        }
+    :param fig_years_per_panel: int
+        Number of years in each panel; e.g., fig_years_per_panel = 500
+    :param panel_param_box: dict, optional
+        Dictionary to modify default values of panel parameters for boxplots (see fig_panel.py);
+        e.g., panel_param_box = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    :param panel_param_tim: dict, optional
+        Dictionary to modify default values of panel parameters for time series (see fig_panel.py);
+        e.g., panel_param_tim = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    """
     if panel_param_box is None:
         panel_param_box = {}
     if panel_param_tim is None:
@@ -417,7 +676,7 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
         if ii == n_panel - 1:
             kwarg["x_nam"] = fig_titles["x_axis"][dia]
         # y-axis
-        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ranges["y_axis"][dia], arr_i=arr_y)
+        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=arr_y)
         # legend
         if ii == 0:
             leg_t = [dat for dat in list_dat if dat in list(fig_colors["curve"].keys())]
@@ -431,12 +690,12 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
             x1, x2, y1, y2 = kwarg["x_lim"] + kwarg["y_lim"]
             dx = (x2 - x1) * default_plot["size_x"] / (x_size * x_frac * 100)
             dy = (y2 - y1) / 100
-            arr_x = [x1 - 21 * dx]
+            arr_x = [x1 - 28 * dx]
             if n_panel % 2 == 0:
                 arr_y = [y1 - 50 * (y_delt / y_size) * dy]
             else:
                 arr_y = [y1 + 50 * dy]
-            kwarg.update({"text": [fig_titles["y_axis"][dia]], "text_c": ["k"], "text_ha": ["right"], "text_r": [90],
+            kwarg.update({"text": [fig_titles["y_axis"][dia]], "text_c": ["k"], "text_ha": ["center"], "text_r": [90],
                           "text_x": arr_x, "text_y": arr_y})
         # plot
         ax = plt.subplot(gs[y_position: y_position + y_size, x_position: x_position + x_size])
@@ -484,7 +743,7 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
         if dia == data_diagnostics[-1]:
             kwarg["x_nam"] = fig_titles["x_axis"][dia]
         # y-axis
-        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ranges["y_axis"][dia], arr_i=y_range)
+        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=y_range)
         kwarg["y_nam"] = fig_titles["y_axis"][dia]
         # text
         x1, x2, y1, y2 = kwarg["x_lim"] + kwarg["y_lim"]
@@ -509,18 +768,80 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 
 
-def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, figure_format: str, figure_name: str,
+def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, fig_format: str, fig_name: str,
                                fig_colors: dict, fig_markers: dict, fig_marker_size: float, fig_orientation: str,
-                               fig_panel_size: dict, fig_ranges: dict, fig_titles: dict, fig_legend_bool: bool = True,
+                               fig_panel_size: dict, fig_ticks: dict, fig_titles: dict, fig_legend_bool: bool = True,
                                fig_legend_position: str = "bottom", fig_multiple_regression: bool = False,
                                fig_title_bool: bool = True, panel_param: dict = None):
+    """
+    Template for F4, S3 and S5: scatterplots
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with three nested levels [diagnostic, dataset, x-or-y], filled with the data to plot
+    :param data_diagnostics: list
+        Names of diagnostic (to keep them in the right order);
+        e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_colors: dict
+        Dictionary with one level [dataset], filled with the color to plot each dataset;
+        e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
+    :param fig_markers: dict
+        Dictionary with one level [dataset], filled with the marker to plot each dataset;
+        e.g., fig_markers = {'ACCESS-CM2': '>', 'ACCESS-ESM1-5': '<'}
+    :param fig_marker_size: float
+        Size of the markers; e.g., fig_marker_size = 60.
+    :param fig_orientation: str
+        Orientation of the figure; e.g., fig_orientation = 'column'
+        Two figure orientations are accepted:
+            'column' (column = variables,  row = statistics)
+            'row'    (column = statistics, row = variables)
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {'x_delt': 2, 'x_frac': 0.5, 'x_size': 5, 'y_delt': 3, 'y_frac': 0.5, 'y_size': 8}
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_ticks: dict
+        Dictionary defining the range and tics of axes; e.g., fig_ticks = {'ave_pr_val_n30e': [0, 1, 2, 3, 4]}
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'ave_pr_val_n30e': 'piControl values'},
+            'y_axis': {'ave_pr_val_n30e': 'historical values'},
+        }
+    :param fig_legend_bool: bool, optional
+        True to plot the datasets legend; e.g., fig_legend_bool = True
+        Default is True
+    :param fig_legend_position: str, optional
+        Position of the legend; e.g., fig_legend_position = 'bottom'
+        Two legend positions are accepted: 'bottom', 'right'
+        Default is 'bottom'
+    :param fig_multiple_regression: bool
+        Compute a different regression for each dataset; e.g., fig_multiple_regression = True
+        Default is False
+    :param fig_title_bool: bool, optional
+        True to plot titles of columns and rows; e.g., fig_title_bool = True
+        Default is True
+    :param panel_param: dict, optional
+        Dictionary to modify default values of panel parameters (see fig_panel.py);
+        e.g., panel_param = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    """
     if panel_param is None:
         panel_param = {}
     # plot initialization
@@ -544,12 +865,12 @@ def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, figure_form
         arr_c, arr_m, arr_x, arr_y, arr_z = [], [], [], [], []
         for dat in list(d1.keys()):
             xx, yy = [], []
-            if dia not in list(fig_ranges.keys()) or (dia in list(fig_ranges.keys()) and fig_ranges[dia] is None):
+            if dia not in list(fig_ticks.keys()) or (dia in list(fig_ticks.keys()) and fig_ticks[dia] is None):
                 xx, yy = d1[dat]["x"], d1[dat]["y"]
             else:
                 for k1, k2 in zip(d1[dat]["x"], d1[dat]["y"]):
-                    if min(fig_ranges[dia]) < k1 < max(fig_ranges[dia]) and \
-                            min(fig_ranges[dia]) < k2 < max(fig_ranges[dia]):
+                    if min(fig_ticks[dia]) < k1 < max(fig_ticks[dia]) and \
+                            min(fig_ticks[dia]) < k2 < max(fig_ticks[dia]):
                         xx.append(k1)
                         yy.append(k2)
             if len(xx) > 0:
@@ -565,7 +886,7 @@ def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, figure_form
             kwarg["title"] = numbering[jj]
             kwarg["title_col"], kwarg["title_row"] = tool_title(fig_titles[dia], jj, n_panel_per_line, fig_orientation)
         # x-axis
-        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ranges[dia], arr_i=arr_x + arr_y)
+        kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"] = tool_figure_axis(fig_ticks[dia], arr_i=arr_x + arr_y)
         kwarg["x_nam"] = fig_titles["x_axis"][dia]
         # y-axis
         kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = kwarg["x_lab"], kwarg["x_lim"], kwarg["x_tic"]
@@ -630,18 +951,78 @@ def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, figure_form
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 
 
-def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic, data_epoch_lengths, data_experiments,
-                                      figure_format: str, figure_name: str, fig_colors: dict, fig_linecolor: str,
-                                      fig_linestyle: str, fig_linewidth: float, fig_panel_size: dict, fig_ranges: dict,
+def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_lengths: list, data_experiments: list,
+                                      fig_format: str, fig_name: str, fig_colors: dict, fig_linecolor: str,
+                                      fig_linestyle: str, fig_linewidth: float, fig_panel_size: dict, fig_ticks: dict,
                                       fig_titles: dict, nbr_dur: int = 2, nbr_gap: float = 0.5,
                                       panel_param: dict = None):
+    """
+    Template for S2: Time series and time series of boxplots
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with four nested levels [experiment, epoch_length, boxplot-or-curve-or-marker, x-or-y], filled with
+        the data to plot
+    :param diagnostic: str
+        Name of the diagnostic to plot; e.g., diagnostic = 'ave_pr_val_n30e'
+    :param data_epoch_lengths: list
+        Names of epoch length (to keep them in the right order);
+        e.g., data_experiments = ['030_year_epoch', '060_year_epoch']
+    :param data_experiments: list
+        Names of experiment (to keep them in the right order); e.g., data_experiments = ['piControl', 'historical']
+    :param fig_format: str
+        Format of the figure; e.g., fig_format = 'pdf'
+        Four figure formats are accepted: 'eps', 'pdf', 'png', 'svg'
+    :param fig_name: str
+        Name of the output file; e.g., fig_name = 'name_of_the_figure'
+    :param fig_colors: dict
+        Dictionary with one level [epoch_length], filled with a list of colors;
+        e.g., fig_colors = {'030_year_epoch': ['orange']}
+    :param fig_linecolor: str
+        Color of the lines; e.g., fig_linecolor = 'k'
+    :param fig_linestyle: str
+        Style of the lines; e.g., fig_linestyle = '-'
+    :param fig_linewidth: float
+        Width of the lines; e.g., fig_linewidth = 1.
+    :param fig_panel_size: dict
+        Dictionary defining the size of each panel;
+        e.g., fig_panel_size = {'x_delt': 2, 'x_frac': 0.5, 'x_size': 5, 'y_delt': 3, 'y_frac': 0.5, 'y_size': 8}
+        'x' and 'y' correspond respectively to the x-axis (horizontal) and y-axis (vertical)
+        'delt' is the distance between panels (in inches)
+        'size' is the size of each panel (in inches)
+        'frac' is a fraction to multiply 'delt' and 'size' (to shrink or expend figure proportionally)
+    :param fig_ticks: dict
+        Dictionary with two nested levels [x-or-y_axis, diagnostic], filled with a list of tics;
+        e.g., fig_ticks = {
+            'x_axis': {'ave_pr_val_n30e': [0, 1]},
+            'y_axis': {'ave_pr_val_n30e': [0, 1, 2, 3, 4]},
+        }
+    :param fig_titles: dict
+        Dictionary defining the titles of panels and axes;
+        e.g., fig_titles = {
+            'ave_pr_val_n30e': {'x': 'N3 PR', 'y': 'mean', 'z': 'xbar'},
+            'x_axis': {'historical': {'ave_pr_val_n30e': ''}},
+            'y_axis': {'ave_pr_val_n30e': 'N3 PR xbar (mm/day)'},
+        }
+    :param nbr_dur: int, optional
+        Number of minimum epoch length to plot before and after the gap for the piControl run; e.g., nbr_dur = 2
+        Default is 2
+    :param nbr_gap: float, optional
+        Number of minimum epoch length bor the size of the gap for the piControl run; e.g., nbr_gap = 1.
+        Default is 0.5
+    :param panel_param: dict, optional
+        Dictionary to modify default values of panel parameters (see fig_panel.py);
+        e.g., panel_param = {'x_nbr_minor': 0}
+        Default is None (no modification of the default values)
+    """
     if panel_param is None:
         panel_param = {}
     # plot initialization
@@ -689,7 +1070,7 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
             # title
             kwarg["title"] = numbering[counter]
             if dur not in data_epoch_lengths:
-                kwarg["title_col"] = "IPSL-CM6A-LR " + deepcopy(exp)
+                kwarg["title_col"] = deepcopy(exp)
             # x-axis
             if exp == "piControl" and dur not in data_epoch_lengths:
                 kwarg["x_tic"] = list(range(0, nbr_dur * dur_r * 12 + 1, dur_r * 12)) + \
@@ -702,7 +1083,7 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
             else:
                 kwarg["x_tic"] = list(range(y1 * 12, y2 * 12 + 1, dur_r * 12))
                 kwarg["x_lim"] = [y1 * 12, y2 * 12]
-            kwarg["x_nam"] = fig_titles["x_axis"][exp] if dur == data_epoch_lengths[-1] else ""
+            kwarg["x_nam"] = fig_titles["x_axis"][exp][dia] if dur == data_epoch_lengths[-1] else ""
             if exp == "piControl" and dur == data_epoch_lengths[-1]:
                 kwarg["x_lab"] = list(range(0, dur_r * nbr_dur + 1, dur_r))
                 kwarg["x_lab"] += [((y2 - y1 + 1) // dur_r - nbr_dur) * dur_r + k for k in kwarg["x_lab"]]
@@ -749,10 +1130,9 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
                 arr_z += [1] * len(arr_x)
                 y_range += arr_y
             # y-axis
-            kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ranges[dia], arr_i=y_range)
+            kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=y_range)
             if dur not in data_epoch_lengths:
-                kwarg["y_nam"] = fig_titles["y_axis"][dia] + " (" + dict_meta[dia]["units"] + ")" \
-                    if dict_meta[dia]["units"] != "" else fig_titles["y_axis"][dia]
+                kwarg["y_nam"] = fig_titles["y_axis"][dia]
             xx1, xx2, yy1, yy2 = kwarg["x_lim"] + kwarg["y_lim"]
             dx, dy = (xx2 - xx1) / 100, (yy2 - yy1) / 100
             if exp == "piControl":
@@ -798,8 +1178,7 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
                     arr_ls += ["right"]
                     arr_ms += ["center"]
                     arr_lw += [90]
-                    arr_z += [fig_titles["y_axis"][dia] + " (" + dict_meta[dia]["units"] + ")"
-                              if dict_meta[dia]["units"] != "" else fig_titles["y_axis"][dia]]
+                    arr_z += [fig_titles["y_axis"][dia]]
                 kwarg.update({"text": arr_z, "text_c": arr_c, "text_fs": arr_fs, "text_ha": arr_ls, "text_r": arr_lw,
                               "text_va": arr_ms, "text_x": arr_x, "text_y": arr_y})
             # plot
@@ -845,7 +1224,7 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
                 # x-axis
                 kwarg["x_lab"], kwarg["x_lim"], kwarg["x_nam"], kwarg["x_tic"] = [""], [-0.5, 0.5], "", [-1]
                 # y-axis
-                kwarg["y_tic"] = fig_ranges[dia]
+                kwarg["y_tic"] = fig_ticks["y_axis"][dia]
                 kwarg["y_lim"] = [min(kwarg["y_tic"]), max(kwarg["y_tic"])]
                 kwarg["y_lab"], kwarg["y_nam"] = [""] * len(kwarg["y_tic"]), ""
                 # boxplot
@@ -868,9 +1247,9 @@ def fig_time_series_and_distributions(dict_i: dict, dict_meta: dict, diagnostic,
     # plot directory (relative to current file directory)
     plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to output figure
-    figure_file_path = os.path.join(plot_directory, "plot/" + str(figure_name)) + "." + str(figure_format)
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
-    plt.savefig(figure_file_path, bbox_inches="tight", format=figure_format)
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
 # ---------------------------------------------------------------------------------------------------------------------#

@@ -50,7 +50,7 @@ default = {
     "fig_format": default_parameters["fig_format"],
     # figure name includes input parameters (may create a very long figure name)
     "fig_detailed_name": False,
-    # figure orientation: column (column = variables, row = statistics), row  (column = statistics, row = statistics)
+    # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # position of the legend on the plot: bottom, right
     "fig_legend_position": default_parameters["fig_legend_position"],
@@ -68,23 +68,27 @@ default = {
     "fig_linestyle": "-",
     # linewidth: all lines have the same width
     "fig_linewidth": 3.,
-    # ranges
-    "fig_ranges": {
+    # ticks
+    "fig_ticks": {
         "x_axis": list(range(0, 2)),
         # boxplot
-        "ave_pr_val_n30e": [round(k / 10, 1) for k in list(range(4, 41, 9))],
-        "ave_ts_val_n30e": [round(k / 10, 1) for k in list(range(242, 275, 8))],
-        "ske_pr_ano_n30e": [round(k / 10, 1) for k in list(range(0, 57, 14))],
-        "ske_ts_ano_n30e": [round(k / 10, 1) for k in list(range(-10, 11, 5))],
-        "var_pr_ano_n30e": [round(k / 10, 1) for k in list(range(1, 98, 24))],
-        "var_ts_ano_n30e": [round(k / 10, 1) for k in list(range(2, 39, 9))],
+        "y_axis": {
+            "ave_pr_val_n30e": [round(k / 10, 1) for k in list(range(4, 41, 9))],
+            "ave_ts_val_n30e": [round(k / 10, 1) for k in list(range(242, 275, 8))],
+            "ske_pr_ano_n30e": [round(k / 10, 1) for k in list(range(0, 57, 14))],
+            "ske_ts_ano_n30e": [round(k / 10, 1) for k in list(range(-10, 11, 5))],
+            "var_pr_ano_n30e": [round(k / 10, 1) for k in list(range(1, 98, 24))],
+            "var_ts_ano_n30e": [round(k / 10, 1) for k in list(range(2, 39, 9))],
+        },
         # map
-        "ave_pr_val": [round(k / 10, 1) for k in list(range(0, 101, 25))],
-        "ave_ts_val": list(range(22, 31, 2)),
-        "ske_pr_ano": list(range(-6, 7, 3)),
-        "ske_ts_ano": list(range(-2, 3, 1)),
-        "var_pr_ano": list(range(0, 17, 4)),
-        "var_ts_ano": [round(k / 10, 1) for k in list(range(0, 17, 4))],
+        "z_axis": {
+            "ave_pr_val": [round(k / 10, 1) for k in list(range(0, 101, 25))],
+            "ave_ts_val": list(range(22, 31, 2)),
+            "ske_pr_ano": list(range(-6, 7, 3)),
+            "ske_ts_ano": list(range(-2, 3, 1)),
+            "var_pr_ano": list(range(0, 17, 4)),
+            "var_ts_ano": [round(k / 10, 1) for k in list(range(0, 17, 4))],
+        },
     },
     # titles
     "fig_titles": default_parameters["fig_titles"],
@@ -115,11 +119,11 @@ def f01_model_uncertainties(data_diagnostics: list = default["data_diagnostics"]
                             fig_linewidth: float = default["fig_linewidth"],
                             fig_orientation: str = default["fig_orientation"],
                             fig_panel_size: dict = default["fig_panel_size"],
-                            fig_ranges: dict = default["fig_ranges"],
                             fig_smile_selected: str = default["fig_smile_selected"],
+                            fig_ticks: dict = default["fig_ticks"],
                             fig_titles: dict = default["fig_titles"],
                             panel_param_box: dict = default["panel_param_box"],
-                            panel_param_map: dict = default["panel_param_map"]):
+                            panel_param_map: dict = default["panel_param_map"], **kwargs):
     #
     # -- Read json
     #
@@ -154,6 +158,30 @@ def f01_model_uncertainties(data_diagnostics: list = default["data_diagnostics"]
                                 maps_and_boxplots, map_values[dia[:-5]][pro][exp][dat], dia, "map", dat)
                         elif dat == "MME--" + str(pro).upper() or dat == fig_smile_selected:
                             maps_and_boxplots = tool_put_in_dict(maps_and_boxplots, array, dia, "boxplot", dat)
+    for dia in list(values.keys()):
+        # x tics
+        if "x_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks["x_axis"], list) is True:
+            pass
+        else:
+            fig_ticks = tool_put_in_dict(fig_ticks, None, "x_axis")
+        # y tics
+        if "y_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks["y_axis"], dict) is True and \
+                dia in list(fig_ticks["y_axis"].keys()) and isinstance(fig_ticks["y_axis"][dia], list) is True:
+            pass
+        else:
+            fig_ticks = tool_put_in_dict(fig_ticks, None, "y_axis", dia)
+        # z tics
+        if "z_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks["z_axis"], dict) is True and \
+                dia[:-5] in list(fig_ticks["z_axis"].keys()) and \
+                isinstance(fig_ticks["z_axis"][dia[:-5]], list) is True:
+            pass
+        else:
+            fig_ticks = tool_put_in_dict(fig_ticks, None, "z_axis", dia[:-5])
+        # z title
+        name = map_metadata[dia[:-5]]["name_short"]
+        if map_metadata[dia[:-5]]["units"] != "":
+            name += " (" + str(map_metadata[dia[:-5]]["units"]) + ")"
+        fig_titles = tool_put_in_dict(fig_titles, name, "z_axis", dia[:-5])
     #
     # -- Figure
     #
@@ -168,8 +196,9 @@ def f01_model_uncertainties(data_diagnostics: list = default["data_diagnostics"]
             fig_name += "_of_em" if data_mme_use_smile_mean is True else "_of_1m"
             fig_name += "_all_smile" if data_mme_use_all_smiles is True else "_1st_smile"
         fig_name += "_" + str(fig_orientation)
-    fig_presentation_uncertainties(maps_and_boxplots, map_metadata, data_diagnostics, fig_format, fig_name, fig_colors,
+    fig_presentation_uncertainties(maps_and_boxplots, data_diagnostics, fig_format, fig_name, fig_colors,
                                    fig_legend_position, fig_linestyle, fig_linewidth, fig_orientation, fig_panel_size,
-                                   fig_ranges, fig_titles, panel_param_box=panel_param_box,
+                                   fig_ticks, fig_titles, panel_param_box=panel_param_box,
                                    panel_param_map=panel_param_map)
     return
+# ---------------------------------------------------------------------------------------------------------------------#
