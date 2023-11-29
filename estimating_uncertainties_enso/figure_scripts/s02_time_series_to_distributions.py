@@ -45,7 +45,8 @@ default = {
     # color per dataset
     "fig_colors": {
         "piControl": "royalblue",
-        "colors": ["lime", "gold", "pink"],
+        "030_year_epoch": ["lime", "gold"],
+        "060_year_epoch": ["pink"],
     },
     # line color, style, width (for time series)
     "fig_linecolor": "k",
