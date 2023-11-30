@@ -54,9 +54,9 @@ default = {
     # distribution used to compute the confidence interval if uncertainty_theory is True: 'normal', 'student'
     "uncertainty_distribution": default_parameters["uncertainty_distribution"],
     # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
-    "uncertainty_combinations": int(1e3),  # default_parameters["uncertainty_combinations"],
+    "uncertainty_combinations": default_parameters["uncertainty_combinations"],
     # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
-    "uncertainty_resamples": int(1e4),  # default_parameters["uncertainty_resamples"],
+    "uncertainty_resamples": default_parameters["uncertainty_resamples"],
     #
     # -- Figure
     #

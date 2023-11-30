@@ -50,9 +50,9 @@ default = {
     # confidence interval of the uncertainty: float [0, 100]
     "uncertainty_confidence_interval": default_parameters["uncertainty_confidence_interval"],
     # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
-    "uncertainty_combinations": int(1e2),  # default_parameters["uncertainty_combinations"],
+    "uncertainty_combinations": default_parameters["uncertainty_combinations"],
     # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
-    "uncertainty_resamples": int(1e2),  # default_parameters["uncertainty_resamples"],
+    "uncertainty_resamples": default_parameters["uncertainty_resamples"],
     # uncertainty to reach per diagnostic per method
     "uncertainty_threshold": {
         "ave_pr_val_n30e": {"unc": {"uncertainty_relative": True, "threshold": list(range(5, 101, 5))}},
