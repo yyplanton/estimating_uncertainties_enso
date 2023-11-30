@@ -25,7 +25,7 @@ from estimating_uncertainties_enso.compute_lib.check_lib import check_type, prin
 # ---------------------------------------------------------------------------------------------------------------------#
 # Functions
 # ---------------------------------------------------------------------------------------------------------------------#
-def _tool_flatten_list(arr_i, list_values: list = None):
+def _tool_flatten_list(arr_i, list_values: list = None) -> list:
     """
     Flatten list of lists
     
@@ -54,7 +54,7 @@ def _tool_flatten_list(arr_i, list_values: list = None):
     return list_values
 
 
-def _tool_axis_auto_ticks(arr_i: list):
+def _tool_axis_auto_ticks(arr_i: list) -> list:
     """
     Create automatic optimized axis ticks
     
@@ -115,7 +115,7 @@ def _tool_axis_auto_ticks(arr_i: list):
     return list_ticks
 
 
-def tool_axis_label(arr_i: list, nam_i: str = ""):
+def tool_axis_label(arr_i: list, nam_i: str = "") -> list:
     """
     Format list of ints or floats into a list of str with the same number of decimals (up to 3 decimals)
 
@@ -165,7 +165,7 @@ def tool_axis_label(arr_i: list, nam_i: str = ""):
     return labels
 
 
-def tool_figure_axis(user_ticks, arr_i=None, axis_name: str = ""):
+def tool_figure_axis(user_ticks, arr_i=None, axis_name: str = "") -> (list, list, list):
     """
     Create axis ticks, tick labels and limits
     
@@ -176,7 +176,8 @@ def tool_figure_axis(user_ticks, arr_i=None, axis_name: str = ""):
     :param arr_i: list, optional
         Values to plot; e.g., arr_i = [[1, 2], [3, 4], [[5, 6], [7, 8]]]
     :param axis_name: str, optional
-        Name of the axis to do special labels (nam_i = 'latitude' or 'longitude')
+        Name of the axis to do special labels; e.g., nam_i = 'latitude'
+        Two names are recognized: 'latitude', 'longitude'
         Default is '' (no special label)
     
     Outputs:
@@ -198,7 +199,7 @@ def tool_figure_axis(user_ticks, arr_i=None, axis_name: str = ""):
 
 
 def tool_figure_initialization(data_diagnostics: list, fig_orientation: str, x_delt: int, x_size: int, y_delt: int,
-                               y_size: int):
+                               y_size: int) -> (list, int, int, int):
     """
     Order diagnostics, choose how many diagnostics are plotted on each line, compute the number of columns and lines
     
@@ -213,13 +214,13 @@ def tool_figure_initialization(data_diagnostics: list, fig_orientation: str, x_d
             'column' (column = variables,  row = statistics)
             'row'    (column = statistics, row = variables)
     :param x_delt: int
-        Horizontal distance between panels
+        Horizontal distance between panels; e.g., x_delt = 1
     :param x_size: int
-        Horizontal size of each panel
+        Horizontal size of each panel; e.g., x_size = 4
     :param y_delt:  int
-        Vertical distance between panels
+        Vertical distance between panels; e.g., y_delt = 1
     :param y_size: int
-        Vertical size of each panel
+        Vertical size of each panel; e.g., y_size = 4
     
     Outputs:
     --------
@@ -268,7 +269,7 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
         Dictionary with one level [dataset], filled with the marker to plot each dataset;
         e.g., fig_markers = {'ACCESS-CM2': '>', 'ACCESS-ESM1-5': '<'}
     :param legend_dict: dict
-        Dictionary with the legend parameters (see fig_panel.py);
+        Dictionary with the legend parameters (see fig_panel.py) in which more keys will be added;
         e.g., legend_dict = {
             'ACCESS-CM2': {
                 'position': {'x': 10, 'y': 10},
@@ -277,7 +278,7 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
         }
         Usually this dictionary is empty
     :param legend_list: list
-        Order of the keys for the legend; legend_list = ['ACCESS-CM2']
+        Order of the keys for the legend in which more keys will be added; e.g., legend_list = ['ACCESS-CM2']
     :param data_diagnostics:  list
         Names of diagnostic (to keep them in the right order);
         e.g., data_diagnostics = ['ave_pr_val_n30e', 'ave_ts_val_n30e']
@@ -289,13 +290,13 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
         Position of the legend; e.g., fig_legend_position = 'bottom'
         Two legend positions are accepted: 'bottom', 'right'
     :param x_frac: float
-        Fraction to multiply 'x_size' (to shrink or expend figure proportionally)
+        Fraction to multiply 'x_size' (to shrink or expend figure proportionally); e.g, x_frac = 1.
     :param x_size: int
-        Horizontal size of each panel
+        Horizontal size of each panel; e.g., x_size = 4
     :param y_frac: float
-        Fraction to multiply 'y_size' (to shrink or expend figure proportionally)
+        Fraction to multiply 'y_size' (to shrink or expend figure proportionally); e.g., y_frac = 1.
     :param y_size: int
-        Vertical size of each panel
+        Vertical size of each panel; e.g., y_size = 4
     """
     if (fig_legend_position == "bottom" and counter == len(data_diagnostics) - n_panel_per_line) or (
             fig_legend_position == "right" and counter + 1 == n_panel_per_line):
@@ -317,7 +318,8 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
     return
 
 
-def tool_title(fig_titles: dict, counter: int, n_panel_per_line: int, fig_orientation: str, txt: str = ""):
+def tool_title(fig_titles: dict, counter: int, n_panel_per_line: int, fig_orientation: str,
+               txt: str = "") -> (str, str):
     """
     Choose to write column and row titles or not
     

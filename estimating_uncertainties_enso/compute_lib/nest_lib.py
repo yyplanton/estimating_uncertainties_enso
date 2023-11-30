@@ -706,6 +706,27 @@ def nest_influence_of_epoch_length(dict_i: dict, epoch_length_reference: str) ->
 
 def nest_quality_control_distributions(dict_i: dict, data_experiments: list,
                                        reference_experiment: str = "piControl") -> dict:
+    """
+    Organize data to plot the quality control boxplots
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with six nested levels [diagnostic, epoch_length, project, experiment, dataset, epoch], filled with a
+        list of values
+    :param data_experiments: list
+        Names of experiment (to keep them in the right order); e.g., data_experiments = ['piControl', 'historical']
+    :param reference_experiment: str, optional
+        The mean of this experiment will be removed from all distributions of a given ensemble;
+        e.g., reference_experiment = 'piControl'
+        Default in 'piControl'
+    
+    Output:
+    -------
+    :return dict_o: dict
+        Dictionary with four nested levels [diagnostic, experiment, boxplot, x-or-y-or-x_tick_labels], filled with the
+        values to plot
+    """
     # compute the difference between piControl mean and the other values
     dict_o = {}
     for dia in list(dict_i.keys()):
@@ -741,9 +762,25 @@ def nest_quality_control_distributions(dict_i: dict, data_experiments: list,
     return dict_o
 
 
-def nest_quality_control_time_series(dict_i: dict, data_epoch_length: str) -> dict:
-    # compute the difference with the first data_epoch_length of the time series and smooth time series using a
-    # data_epoch_length * 12 + 1 triangular-weighted running average
+def nest_quality_control_time_series(dict_i: dict, epoch_length: str) -> dict:
+    """
+    Organize data to plot the quality control time series
+    
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with four nested levels [diagnostic, project, experiment, dataset], filled with a list of values
+    :param epoch_length: str
+        Epoch length to use for the smoothing of the time series (triangular-weighted running average);
+        e.g., epoch_length = '030_year_epoch'
+    
+    Output:
+    -------
+    :return dict_o: dict
+        Dictionary with four nested levels [diagnostic, dataset, curve, x-or-y], filled with the values to plot
+    """
+    # compute the difference with the first epoch_length of the time series and smooth time series using an
+    # epoch_length * 12 + 1 triangular-weighted running average
     dict_o = {}
     list_dia = list(dict_i.keys())
     if len(list_dia) > 1:
@@ -761,16 +798,16 @@ def nest_quality_control_time_series(dict_i: dict, data_epoch_length: str) -> di
             for dat in list(dict_i[dia][pro][exp]):
                 # array
                 arr_y = numpy__array(dict_i[dia][pro][exp][dat][0])
-                # average the first data_epoch_length of the time series
-                dur = int(data_epoch_length.split("_")[0]) * 12
+                # average the first epoch_length of the time series
+                dur = int(epoch_length.split("_")[0]) * 12
                 ave = stat_compute_statistic(arr_y[: dur], "mea")
                 # smooth time series
                 arr_y = stat_smooth_triangle(arr_y, dur + 1)
-                # remove data_epoch_length -years average
+                # remove epoch_length -years average
                 arr_y = list(arr_y - ave)
                 # x values
                 arr_x = list(range(len(arr_y)))
-                # remove half of data_epoch_length -years at both ends of the time series (poorly smoothed epoch)
+                # remove half of epoch_length -years at both ends of the time series (poorly smoothed epoch)
                 arr_x = arr_x[dur // 2: -dur // 2]
                 arr_y = arr_y[dur // 2: -dur // 2]
                 dict_o = tool_put_in_dict(dict_o, arr_x, dia, dat, "curve", "x")

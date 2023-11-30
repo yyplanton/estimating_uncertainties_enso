@@ -671,7 +671,7 @@ def _plot_shading(ax, sha_c=None, sha_x=None, sha_y1=None, sha_y2=None, sha_z=No
 
 def plot_main(ax, **kwarg):
     """
-    Plot given: boxplots, curves, histograms, markers and shadings
+    Plot given boxplots, curves, histograms, markers and shadings
 
     Inputs:
     -------
@@ -701,61 +701,106 @@ def plot_main(ax, **kwarg):
 
 def plot_map(ax, fontsize: float = default_plot["fontsize"], legend_position: str = "bottom",
              projection: object = default_map["projection"], region: list = None, s_lab: list = default_plot["lab"],
-             s_nam: str = "", s_tic: list = default_plot["tic"], sha_cs=default_map["colorbar"],
-             sha_cl=default_map["color"], sha_s=None,
-             x_lab: list = default_map["lon_tic"], x_lim=default_map["lon_lim"], x_tic=default_map["lon_tic"],
-             y_lab: list = default_map["lat_tic"], y_lim=default_map["lat_lim"], y_tic=default_map["lat_tic"],
-             **kwarg):
-    # select region
-    ax.coastlines()
-    ax.set_extent(x_lim + y_lim, crs=projection)
-    # draw coastlines
-    ax.coastlines()
-    # fill continents
-    ax.add_feature(cfeature.NaturalEarthFeature("physical", "land", "50m", edgecolor="face", facecolor=sha_cl))
-    # x-y ticks and labels
-    ax.set_xticks(x_tic, crs=projection)
-    ax.set_yticks(y_tic, crs=projection)
-    ax.set_xticklabels(x_lab)
-    ax.set_yticklabels(y_lab)
-    ax.tick_params(axis="both", direction="out", which="both", labelsize=fontsize, bottom=True, top=False, left=True,
-                   right=True, labelbottom=True, labeltop=False, labelleft=True, labelright=False)
-    # colorbar levels
-    dif, mul = round(float(s_tic[1] - s_tic[0]), 5), 5
-    delta = round(dif / mul, 5)
-    lev = [round(k1 + k2 * delta, 5) for k1 in s_tic[:-1] for k2 in range(mul)] + [s_tic[-1]]
-    # shading
-    xx, yy = numpy__meshgrid(sha_s.longitude, sha_s.latitude)
-    lc = ax.contourf(xx, yy, sha_s, lev, extend="both", transform=projection, cmap=sha_cs)
-    # title
-    _ax_titles(ax, **kwarg)
-    # region delimitation
-    if isinstance(region, list) is True or isinstance(region, str) is True:
-        list_reg = deepcopy(region) if isinstance(region, list) is True else [region]
-        for k in list_reg:
-            lat_corners = numpy__array(default_region[k]["latitude"] + list(reversed(default_region[k]["latitude"])))
-            lon_corners = numpy__array(
-                [default_region[k]["longitude"][0]] * 2 + [default_region[k]["longitude"][1]] * 2)
-            poly_corners = numpy__zeros((len(lat_corners), 2))
-            poly_corners[:, 0] = lon_corners
-            poly_corners[:, 1] = lat_corners
-            pol = Polygon(poly_corners, linewidth=2, edgecolor=default_region[k]["color"], facecolor="none", zorder=5,
-                          transform=projection)
-            ax.add_patch(pol)
-    # colorbar
-    if legend_position == "bottom":
-        x1, x2 = ax.get_position().x0, ax.get_position().x1
-        y1, y2 = ax.get_position().y0, ax.get_position().y1
-        cax = plt.axes([x1, y1 - (y2 - y1) / 3.5, x2 - x1, (y2 - y1) / 15])
-        cbar = plt.colorbar(lc, cax=cax, orientation="horizontal", ticks=s_tic, label=s_lab, pad=0.3)
-        cbar.ax.tick_params(labelsize=fontsize)
-        cbar.set_label(s_nam, fontsize=fontsize, labelpad=2)
-    else:
-        x1, x2 = ax.get_position().x0, ax.get_position().x1
-        y1, y2 = ax.get_position().y0, ax.get_position().y1
-        cax = plt.axes([x2 + (x2 - x1) / 20, y1, (x2 - x1) / 30, y2 - y1])
-        cbar = plt.colorbar(lc, cax=cax, orientation="vertical", ticks=s_tic, label=s_lab, pad=0.35)
-        cbar.ax.tick_params(labelsize=fontsize)
-        cbar.set_label(s_nam, fontsize=fontsize, rotation=90)
+             s_nam: str = "", s_tic: list = default_plot["tic"], sha_cs: str = default_map["colorbar"],
+             sha_cl: str = default_map["color"], sha_s=None,  x_lab: list = default_map["lon_tic"],
+             x_lim: list = default_map["lon_lim"], x_tic: list = default_map["lon_tic"],
+             y_lab: list = default_map["lat_tic"], y_lim: list = default_map["lat_lim"],
+             y_tic: list = default_map["lat_tic"], **kwarg):
+    """
+    Plot map
+    
+    :param ax: matplotlib Axes object
+    :param fontsize: float, optional
+        Size of the font; e.g., fontsize = 15.
+    :param legend_position: str, optional
+        Position of the legend; e.g., fig_legend_position = 'bottom'
+        Two legend positions are accepted: 'bottom', 'right'
+        Default is 'bottom'
+    :param projection: object, optional
+        Output from a cartopy projection (see https://scitools.org.uk/cartopy/docs/v0.15/crs/projections.html);
+        e.g., projection = cartopy.crs.PlateCarree()
+    :param region: list, optional
+        Names of region to draw on the map, must be defined in default_region; e.g., region = ['n30e']
+        Default is None (no region)
+    :param s_lab: list, optional
+        Tick labels for colorbar; e.g., s_lab = ['1', '2']
+    :param s_nam: str, optional
+        Label for the colorbar
+        Default is ''
+    :param s_tic: list, optional
+        Ticks for colorbar; e.g., s_lab = [1, 2]
+    :param sha_cs: str, optional
+        Name of a colorbar; e.g., sha_cs = 'cmo.rain'
+    :param sha_cl: str, optional
+        Name of a color for the land; e.g., sha_cl = 'grey'
+    :param sha_s: array_like
+    :param x_lab: list, optional
+        Tick labels for longitude; e.g., x_lab = ['180°', '80°W']
+    :param x_lim: list, optional
+        Axis minimum and maximum values; e.g., x_lim = [150, 280]
+    :param x_tic: list, optional
+        Ticks for longitude; e.g., x_tic = [180, 280]
+    :param y_lab: list, optional
+        Tick labels for latitude; e.g., y_lab = ['10°S', '0°', '10°N']
+    :param y_lim: list, optional
+        Axis minimum and maximum values; e.g., y_lim = [150, 280]
+    :param y_tic: list, optional
+        Ticks for latitude; e.g., y_tic = [-10, 0, 10]
+    :param kwarg: dict, optional
+        Extra keywords (for title), see _ax_titles
+    """
+    if sha_s is not None:
+        # select region
+        ax.coastlines()
+        ax.set_extent(x_lim + y_lim, crs=projection)
+        # draw coastlines
+        ax.coastlines()
+        # fill continents
+        ax.add_feature(cfeature.NaturalEarthFeature("physical", "land", "50m", edgecolor="face", facecolor=sha_cl))
+        # x-y ticks and labels
+        ax.set_xticks(x_tic, crs=projection)
+        ax.set_yticks(y_tic, crs=projection)
+        ax.set_xticklabels(x_lab)
+        ax.set_yticklabels(y_lab)
+        ax.tick_params(axis="both", direction="out", which="both", labelsize=fontsize, bottom=True, top=False,
+                       left=True, right=True, labelbottom=True, labeltop=False, labelleft=True, labelright=False)
+        # colorbar levels
+        dif, mul = round(float(s_tic[1] - s_tic[0]), 5), 5
+        delta = round(dif / mul, 5)
+        lev = [round(k1 + k2 * delta, 5) for k1 in s_tic[:-1] for k2 in range(mul)] + [s_tic[-1]]
+        # shading
+        xx, yy = numpy__meshgrid(sha_s.longitude, sha_s.latitude)
+        lc = ax.contourf(xx, yy, sha_s, lev, extend="both", transform=projection, cmap=sha_cs)
+        # title
+        _ax_titles(ax, **kwarg)
+        # region delimitation
+        if isinstance(region, list) is True or isinstance(region, str) is True:
+            list_reg = deepcopy(region) if isinstance(region, list) is True else [region]
+            for k in list_reg:
+                lat_corners = numpy__array(default_region[k]["latitude"] +
+                                           list(reversed(default_region[k]["latitude"])))
+                lon_corners = numpy__array([default_region[k]["longitude"][0]] * 2 +
+                                           [default_region[k]["longitude"][1]] * 2)
+                poly_corners = numpy__zeros((len(lat_corners), 2))
+                poly_corners[:, 0] = lon_corners
+                poly_corners[:, 1] = lat_corners
+                pol = Polygon(poly_corners, linewidth=2, edgecolor=default_region[k]["color"], facecolor="none",
+                              zorder=5, transform=projection)
+                ax.add_patch(pol)
+        # colorbar
+        if legend_position == "bottom":
+            x1, x2 = ax.get_position().x0, ax.get_position().x1
+            y1, y2 = ax.get_position().y0, ax.get_position().y1
+            cax = plt.axes([x1, y1 - (y2 - y1) / 3.5, x2 - x1, (y2 - y1) / 15])
+            cbar = plt.colorbar(lc, cax=cax, orientation="horizontal", ticks=s_tic, label=s_lab, pad=0.3)
+            cbar.ax.tick_params(labelsize=fontsize)
+            cbar.set_label(s_nam, fontsize=fontsize, labelpad=2)
+        else:
+            x1, x2 = ax.get_position().x0, ax.get_position().x1
+            y1, y2 = ax.get_position().y0, ax.get_position().y1
+            cax = plt.axes([x2 + (x2 - x1) / 20, y1, (x2 - x1) / 30, y2 - y1])
+            cbar = plt.colorbar(lc, cax=cax, orientation="vertical", ticks=s_tic, label=s_lab, pad=0.35)
+            cbar.ax.tick_params(labelsize=fontsize)
+            cbar.set_label(s_nam, fontsize=fontsize, rotation=90)
     return
 # ---------------------------------------------------------------------------------------------------------------------#

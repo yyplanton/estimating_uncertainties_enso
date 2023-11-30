@@ -463,10 +463,14 @@ def stat_smooth_triangle(arr_i, window: int):
     """
     Smooth given array using a triangle-weighted running average
     
+    Inputs:
+    -------
     :param arr_i: array_like
     :param window: int
         Number of points used to compute the running average
     
+    Output:
+    -------
     :return arr_o: array_like
         Smoothed array
     """
@@ -737,8 +741,8 @@ def stat_zscore(sample_size, confidence_interval: float, distribution: str) -> f
     """
     Compute the distribution's zscore for the given significance_level
 
-    Input:
-    ------
+    Inputs:
+    -------
     :param sample_size: float or list
         Number of values in each sample; e.g., sample_size = 10
     :param confidence_interval: float
@@ -747,7 +751,6 @@ def stat_zscore(sample_size, confidence_interval: float, distribution: str) -> f
         Name of a distribution, Variance of the population; e.g., distribution = 'normal'
         Two distributions are defined: 'normal', 'student'
     
-
     Output:
     -------
     :return zscore: float
