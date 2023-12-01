@@ -1093,7 +1093,7 @@ def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_
             y_range = []
             if exp != "piControl" and dur in data_epoch_lengths:
                 arr_x, arr_y = d1["x"], d1["y"]
-                arr_c = deepcopy(fig_colors[exp]) + ["k"] * (len(arr_x) - len(fig_colors[exp]))
+                arr_c = fig_colors[dur] + ["k"] * (len(arr_x) - len(fig_colors[dur]))
                 arr_fs = [2] * len(arr_x)
                 arr_ls = ["-"] * len(arr_x)
                 arr_lw = [0.5] * len(arr_x)
@@ -1106,7 +1106,7 @@ def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_
                 arr_y = d1["y"][: int_t] + d1["y"][-int_t:]
                 arr_x = d1["x"][: int_t]
                 arr_x += [(nbr_dur + nbr_gap) * dur_r * 12 + k for k in arr_x]
-                arr_c = deepcopy(fig_colors[exp]) + ["k"] * (len(arr_x) - len(fig_colors[exp]))
+                arr_c = fig_colors[dur] + ["k"] * (len(arr_x) - len(fig_colors[dur]))
                 arr_ls = ["o"] * len(arr_x)
                 arr_lw = [30] * len(arr_x)
                 kwarg.update({"mar_cf": arr_c, "mar_m": arr_ls, "mar_s": arr_lw, "mar_x": arr_x, "mar_y": arr_y})
@@ -1189,7 +1189,7 @@ def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_
                     ax.annotate("", xy=(xxx, yy1 - 5 * dy), xytext=(xxx, yyy), xycoords="data", annotation_clip=False,
                                 zorder=11, arrowprops=dict(arrowstyle="-", color="white", lw=4))
             if dur in data_epoch_lengths:
-                for kk, cc in enumerate(fig_colors[exp]):
+                for kk, cc in enumerate(fig_colors[dur]):
                     if exp == "piControl":
                         xx = xx1 + (dur_t / 2 + dur_t * kk) * 12
                     else:
