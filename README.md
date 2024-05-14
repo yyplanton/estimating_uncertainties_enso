@@ -1,5 +1,10 @@
-Codes and data for Planton et al. (2024)
+# Codes and data for Planton et al. (2024)
 
+## Paper [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)
+
+## GitHub [repository](https://github.com/yyplanton/estimating_uncertainties_enso/)
+
+##
 In the paper we developed a methodology to estimate the required ensemble size for a particular application, before the ensemble is generated (section 3.4).
 To do so, we base our estimates from non-overlapping epochs of the piControl experiments.
 Here is an example of results for Niño3 SSTA variance sing 30-year epochs.
