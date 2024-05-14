@@ -9,7 +9,7 @@ To model the climate, scientists often generate an ensemble of simulations with 
 In the paper we analyzed internal variability simulated by climate models and developed a methodology to estimate the ensemble size for a particular application, before the ensemble is generated (section 3.4). To do so, we base our estimates on non-overlapping epochs of the piControl experiments.
 
 
-### 30-year epochs
+#### 30-year epochs
 
 |  | SST |
 | --- | --- |
