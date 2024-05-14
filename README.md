@@ -15,4 +15,4 @@ In the paper we analyzed internal variability simulated by climate models and de
 | --- | --- |
 | mean | Niño3 |
 | variance | [Niño3](docs/res_var_ts_ano_n30e_030_year.md) |
-| skewness | [Niño3](docs/res_ske_ts_ano_n30e_030_year.md) |
+| skewness | Niño3 |
