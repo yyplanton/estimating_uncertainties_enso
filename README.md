@@ -11,8 +11,10 @@ This paper explores this question and provides a way to estimate the ensemble si
 First, two parameters reducing the influence of internal variability are analyzed:
 1. [ensemble size](#1-what-is-the-influence-of-ensemble-size)
 2. [epoch length](##-What-is-the-influence-of-epoch-length?)  
+
 Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:
 3. [piControl vs. historical](##-Can-piControl-be-used-to-estimate-historical-ensemble-size?)  
+
 Finally, several methods to estimate the ensemble size are presented:
 4. [estimating the ensemble size](##-How-to-estimate-the-ensemble-size?)  
 
