@@ -3,15 +3,10 @@
 Ensemble size required to reach a relative uncertainty on the ensemble mean, computed using equation (10) from Planton et al. ([2024](https://doi.org/10.22541/essoar.170196744.48068128/v1)).
 
 project: CMIP6
-
 experiment: piControl
-
 epoch length: 30-year
-
 region: Niño3 (5N-5S, 90-150W)
-
 variable: SST (seasonal cycle removed)
-
 statistic: variance
 
 
