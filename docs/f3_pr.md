@@ -17,3 +17,5 @@
 Computed using equation (9) from Planton et al. ([preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1))
 
 ![uncertainty_vs_ensemble_size_pr](f03_uncertainty_vs_ensemble_size_pr.pdf)
+
+<iframe src="f03_uncertainty_vs_ensemble_size_pr.pdf" width="100%" height="500" frameborder="0" />
