@@ -9,7 +9,7 @@
 To model the climate, scientists often generate an ensemble of simulations with a given climate model and given forcings (e.g., volcanic eruptions, greenhouse gas emissions) but different plausible initial conditions. These different initial conditions represent the uncertainties on the Earth’s climate conditions at the start of the simulation. As Earth’s climate naturally fluctuates on multiple timescales (‘internal variability’), each simulation of the ensemble represents a possible evolution of the climate. By averaging the climate over a large enough ensemble, one can separate the internal variability from forced changes (e.g., changes forced by greenhouse gas emissions). But what does ‘large enough’ means?  
 This paper explores this question and provides a way to estimate the ensemble size depending on one's needs.  
 First, two parameters reducing the influence of internal variability are analyzed:
-1. [ensemble size](##-What-is-the-influence-of-ensemble-size)
+1. [ensemble size](##What-is-the-influence-of-ensemble-size)
 2. [epoch length](##-What-is-the-influence-of-epoch-length?)  
 Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:
 3. [piControl vs. historical](##-Can-piControl-be-used-to-estimate-historical-ensemble-size?)  
