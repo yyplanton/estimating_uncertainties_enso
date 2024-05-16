@@ -8,15 +8,7 @@
 ## Project
 To model the climate, scientists often generate an ensemble of simulations with a given climate model and given forcings (e.g., volcanic eruptions, greenhouse gas emissions) but different plausible initial conditions. These different initial conditions represent the uncertainties on the Earth’s climate conditions at the start of the simulation. As Earth’s climate naturally fluctuates on multiple timescales (‘internal variability’), each simulation of the ensemble represents a possible evolution of the climate. By averaging the climate over a large enough ensemble, one can separate the internal variability from forced changes (e.g., changes forced by greenhouse gas emissions). But what does ‘large enough’ means?  
 This paper explores this question and provides a way to estimate the ensemble size depending on one's needs.  
-First, two parameters reducing the influence of internal variability are analyzed:
-1. [ensemble size](#1-what-is-the-influence-of-ensemble-size)
-2. [epoch length](#2-what-is-the-influence-of-epoch-length)  
-
-Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:  
-3. [piControl vs. historical](#3-can-piControl-be-used-to-estimate-historical-ensemble-size)  
-
-Finally, several methods to estimate the ensemble size are presented:  
-4. [estimating the ensemble size](#4-how-to-estimate-the-ensemble-size)  
+First, two parameters reducing the influence of internal variability are analyzed: [ensemble size](#1-what-is-the-influence-of-ensemble-size) and [epoch length](#2-what-is-the-influence-of-epoch-length). Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter: [piControl vs. historical](#3-can-piControl-be-used-to-estimate-historical-ensemble-size). Finally, several methods to estimate the ensemble size are presented: [estimating the ensemble size](#4-how-to-estimate-the-ensemble-size).
 
 The codes in this [repository](https://github.com/yyplanton/estimating_uncertainties_enso/) are used to generate the figures for the [paper](https://doi.org/10.22541/essoar.170196744.48068128/v1).  
 The climate data analysis was performed using the [CLIVAR ENSO Metrics Package](https://github.com/CLIVAR-PRP/ENSO_metrics) (Planton et al. [2021](https://doi.org/10.1175/BAMS-D-19-0337.1)) via the [PCMDI Metrics Package framework](https://github.com/PCMDI/pcmdi_metrics) (Lee et al., [2024](https://doi.org/10.5194/gmd-17-3919-2024)).  
