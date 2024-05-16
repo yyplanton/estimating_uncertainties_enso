@@ -10,16 +10,16 @@ To model the climate, scientists often generate an ensemble of simulations with 
 This paper explores this question and provides a way to estimate the ensemble size depending on one's needs.  
 First, two parameters reducing the influence of internal variability are analyzed:
 1. [ensemble size](#1-what-is-the-influence-of-ensemble-size)
-2. [epoch length](##-What-is-the-influence-of-epoch-length?)  
+2. [epoch length](#2-what-is-the-influence-of-epoch-length)  
 
 Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:
-3. [piControl vs. historical](##-Can-piControl-be-used-to-estimate-historical-ensemble-size?)  
+3. [piControl vs. historical](#3-can-piControl-be-used-to-estimate-historical-ensemble-size)  
 
 Finally, several methods to estimate the ensemble size are presented:
-4. [estimating the ensemble size](##-How-to-estimate-the-ensemble-size?)  
+4. [estimating the ensemble size](#4-how-to-estimate-the-ensemble-size)  
 
 The codes in this [repository](https://github.com/yyplanton/estimating_uncertainties_enso/) are used to generate the figures for the [paper](https://doi.org/10.22541/essoar.170196744.48068128/v1).  
-The climate data analysis was performed using the [CLIVAR ENSO Metrics Package](https://github.com/CLIVAR-PRP/ENSO_metrics) (Planton et al. [2021](https://doi.org/10.1175/BAMS-D-19-0337.1)) via the [PCMDI Metrics Package framework](https://github.com/PCMDI/pcmdi_metrics) (Lee et al., [2023](https://doi.org/10.5194/egusphere-2023-2720)).  
+The climate data analysis was performed using the [CLIVAR ENSO Metrics Package](https://github.com/CLIVAR-PRP/ENSO_metrics) (Planton et al. [2021](https://doi.org/10.1175/BAMS-D-19-0337.1)) via the [PCMDI Metrics Package framework](https://github.com/PCMDI/pcmdi_metrics) (Lee et al., [2024](https://doi.org/10.5194/gmd-17-3919-2024)).  
 These webpages present some key results of the paper as well as additional information.
 
 
@@ -28,18 +28,18 @@ According to theory, the uncertainty of the ensemble mean decreases with the squ
 This is confirmed by our analysis: [PR](docs/f3_pr.md), [TS](docs/f3_ts.md), [Taux](docs/f3_tx.md), [Tauy](docs/f3_ty.md)
 
 
-## 2. What is the influence of epoch length?
+## 2. What is the influence of epoch length?<a id='2-what-is-the-influence-of-epoch-length'></a>
 According to theory, if time series' distributions are normal and samples are independent, the uncertainty of the ensemble mean decreases with the square root of the number of time steps (equations 5, 6 and 7 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)).  
 On average the uncertainty reduces with increasing epoch length: [PR](docs/f4_pr.md), [TS](docs/f4_ts.md), [Taux](docs/f4_tx.md), [Tauy](docs/f4_ty.md)  
 However there are large inter-model differences, linked to the non-normality of the distributions (see Figure 1 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)) and the relatively small ensemble sizes (see Figure S3 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)). Note that changing the epoch length generally does not change the uncertainty of the multi-model ensemble mean: increasing the epoch length does not reduce the inter-model differences.  
 
 
-## 3. Can piControl be used to estimate historical ensemble size?
+## 3. Can piControl be used to estimate historical ensemble size?<a id='3-can-piControl-be-used-to-estimate-historical-ensemble-size'></a>
 The uncertainty of the ensemble mean is generally similar when computed with an historical ensemble and the corresponding piControl experiment: [PR](docs/f5_pr.md), [TS](docs/f5_ts.md), [Taux](docs/f5_tx.md), [Tauy](docs/f5_ty.md)  
 This implies that the piControl experiment, which is computed before other experiment types, can be used to estimate *a priori* the size of the ensemble required to reduce the impact of internal variability and detect forced changes.
 
 
-## 4. How to estimate the ensemble size?
+## 4. How to estimate the ensemble size?<a id='4-how-to-estimate-the-ensemble-size'></a>
 Using the results of sections [1](#-What-is-the-influence-of-ensemble-size?) and [3](#-Can-piControl-be-used-to-estimate-historical-ensemble-size?), we can use a very simple equation (equation 10 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)) to estimate the ensemble size. One only need to measure the internal variability of a given statistic and decide of an acceptable level of uncertainty.  
 Several methods to select an acceptable level of uncertainty are presented in Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1). Here we only provide ensemble size estimates for each model, several regions, variables, statistics and epoch lengths.
 
