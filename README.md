@@ -12,10 +12,10 @@ First, two parameters reducing the influence of internal variability are analyze
 1. [ensemble size](#1-what-is-the-influence-of-ensemble-size)
 2. [epoch length](#2-what-is-the-influence-of-epoch-length)  
 
-Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:
+Then piControl simulations (long unforced simulation) are compared to historical ensembles to check if the former can be used to estimate, *a priori*, the size of the latter:  
 3. [piControl vs. historical](#3-can-piControl-be-used-to-estimate-historical-ensemble-size)  
 
-Finally, several methods to estimate the ensemble size are presented:
+Finally, several methods to estimate the ensemble size are presented:  
 4. [estimating the ensemble size](#4-how-to-estimate-the-ensemble-size)  
 
 The codes in this [repository](https://github.com/yyplanton/estimating_uncertainties_enso/) are used to generate the figures for the [paper](https://doi.org/10.22541/essoar.170196744.48068128/v1).  
