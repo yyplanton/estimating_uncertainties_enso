@@ -27,7 +27,7 @@ However there are large inter-model differences, linked to the non-normality of 
 
 
 ## 3. Can piControl be used to estimate historical ensemble size?<a id='3-can-piControl-be-used-to-estimate-historical-ensemble-size'></a>
-The uncertainty of the ensemble mean is generally similar when computed with an historical ensemble and the corresponding piControl experiment: [PR](docs/f5_pr.md), [TS](docs/f5_ts.md), [Taux](docs/f5_tx.md), [Tauy](docs/f5_ty.md)  
+The uncertainty of the ensemble mean is generally similar when computed with an historical ensemble and the corresponding piControl experiment: [PR](docs/f5_pr_030.md), [TS](docs/f5_ts_030.md)  
 This implies that the piControl experiment, which is computed before other experiment types, can be used to estimate *a priori* the size of the ensemble required to reduce the impact of internal variability and detect forced changes.
 
 
