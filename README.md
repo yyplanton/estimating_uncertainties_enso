@@ -17,12 +17,12 @@ These webpages present some key results of the paper as well as additional infor
 
 ## 1. What is the influence of ensemble size?<a id='1-what-is-the-influence-of-ensemble-size'></a>
 According to theory, the uncertainty of the ensemble mean decreases with the square root of the ensemble size (equation 9 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)).  
-This is confirmed by our analysis: [PR](docs/f3_pr.md), [TS](docs/f3_ts.md), [Taux](docs/f3_tx.md), [Tauy](docs/f3_ty.md)
+This is confirmed by our analysis: [PR](docs/f3_pr.md), [TS](docs/f3_ts.md)
 
 
 ## 2. What is the influence of epoch length?<a id='2-what-is-the-influence-of-epoch-length'></a>
 According to theory, if time series' distributions are normal and samples are independent, the uncertainty of the ensemble mean decreases with the square root of the number of time steps (equations 5, 6 and 7 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)).  
-On average the uncertainty reduces with increasing epoch length: [PR](docs/f4_pr.md), [TS](docs/f4_ts.md), [Taux](docs/f4_tx.md), [Tauy](docs/f4_ty.md)  
+On average the uncertainty reduces with increasing epoch length: [PR](docs/f4_pr.md), [TS](docs/f4_ts.md)  
 However there are large inter-model differences, linked to the non-normality of the distributions (see Figure 1 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)) and the relatively small ensemble sizes (see Figure S3 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)). Note that changing the epoch length generally does not change the uncertainty of the multi-model ensemble mean: increasing the epoch length does not reduce the inter-model differences.  
 
 
