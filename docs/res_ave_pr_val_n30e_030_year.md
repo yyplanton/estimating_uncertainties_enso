@@ -10,7 +10,7 @@
 
 - region: Niño3 (5N-5S, 90-150W)
 
-- variable: PR (seasonal cycle removed)
+- variable: PR
 
 - statistic: mean
 
