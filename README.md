@@ -46,8 +46,8 @@ Several methods to select an acceptable level of uncertainty are presented in Pl
 
 #### 60-year epochs
 
-|  | PR | SST | Taux | Tauy |
-| --- | --- | --- | --- | --- |
+|  | PR | SST |
+| --- | --- | --- |
 | mean | [Niño4](docs/res_ave_pr_val_n40e_060_year.md) [Niño3.4](docs/res_ave_pr_val_n34e_060_year.md) [Niño3](docs/res_ave_pr_val_n30e_060_year.md) | [Niño4](docs/res_ave_ts_val_n40e_060_year.md) [Niño3.4](docs/res_ave_ts_val_n34e_060_year.md) [Niño3](docs/res_ave_ts_val_n30e_060_year.md) |
 | variance | [Niño4](docs/res_var_pr_ano_n40e_060_year.md) [Niño3.4](docs/res_var_pr_ano_n34e_060_year.md) [Niño3](docs/res_var_pr_ano_n30e_060_year.md) | [Niño4](docs/res_var_ts_ano_n40e_060_year.md) [Niño3.4](docs/res_var_ts_ano_n34e_060_year.md) [Niño3](docs/res_var_ts_ano_n30e_060_year.md) |
 | skewness | [Niño4](docs/res_ske_pr_ano_n40e_060_year.md) [Niño3.4](docs/res_ske_pr_ano_n34e_060_year.md) [Niño3](docs/res_ske_pr_ano_n30e_060_year.md) | [Niño4](docs/res_ske_ts_ano_n40e_060_year.md) [Niño3.4](docs/res_ske_ts_ano_n34e_060_year.md) [Niño3](docs/res_ske_ts_ano_n30e_060_year.md) |
