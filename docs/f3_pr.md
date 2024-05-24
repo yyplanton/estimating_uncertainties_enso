@@ -1,7 +1,7 @@
 [back to README](../README.md)
 
 ## 1. What is the influence of ensemble size?
-The uncertainty of the ensemble mean decreases the square root of the ensemble size.
+The uncertainty of the ensemble mean decreases with the square root of the ensemble size.
 
 
 - project: CMIP6
