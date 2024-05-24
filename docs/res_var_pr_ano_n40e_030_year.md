@@ -25,15 +25,15 @@ Computed using equation (10) from Planton et al. ([preprint](https://doi.org/10.
 
 |  | PR | SST |
 | --- | --- | --- |
-| mean | [Niño4](docs/res_ave_pr_val_n40e_030_year.md) [Niño3.4](docs/res_ave_pr_val_n34e_030_year.md) [Niño3](docs/res_ave_pr_val_n30e_030_year.md) | [Niño4](docs/res_ave_ts_val_n40e_030_year.md) [Niño3.4](docs/res_ave_ts_val_n34e_030_year.md) [Niño3](docs/res_ave_ts_val_n30e_030_year.md) |
-| variance | Niño4 [Niño3.4](docs/res_var_pr_ano_n34e_030_year.md) [Niño3](docs/res_var_pr_ano_n30e_030_year.md) | [Niño4](docs/res_var_ts_ano_n40e_030_year.md) [Niño3.4](docs/res_var_ts_ano_n34e_030_year.md) [Niño3](docs/res_var_ts_ano_n30e_030_year.md) |
-| skewness | [Niño4](docs/res_ske_pr_ano_n40e_030_year.md) [Niño3.4](docs/res_ske_pr_ano_n34e_030_year.md) [Niño3](docs/res_ske_pr_ano_n30e_030_year.md) | [Niño4](docs/res_ske_ts_ano_n40e_030_year.md) [Niño3.4](docs/res_ske_ts_ano_n34e_030_year.md) [Niño3](docs/res_ske_ts_ano_n30e_030_year.md) |
+| mean | [Niño4](res_ave_pr_val_n40e_030_year.md) [Niño3.4](res_ave_pr_val_n34e_030_year.md) [Niño3](res_ave_pr_val_n30e_030_year.md) | [Niño4](res_ave_ts_val_n40e_030_year.md) [Niño3.4](res_ave_ts_val_n34e_030_year.md) [Niño3](res_ave_ts_val_n30e_030_year.md) |
+| variance | Niño4 [Niño3.4](res_var_pr_ano_n34e_030_year.md) [Niño3](res_var_pr_ano_n30e_030_year.md) | [Niño4](res_var_ts_ano_n40e_030_year.md) [Niño3.4](res_var_ts_ano_n34e_030_year.md) [Niño3](res_var_ts_ano_n30e_030_year.md) |
+| skewness | [Niño4](res_ske_pr_ano_n40e_030_year.md) [Niño3.4](res_ske_pr_ano_n34e_030_year.md) [Niño3](res_ske_pr_ano_n30e_030_year.md) | [Niño4](res_ske_ts_ano_n40e_030_year.md) [Niño3.4](res_ske_ts_ano_n34e_030_year.md) [Niño3](res_ske_ts_ano_n30e_030_year.md) |
 
 
 #### 60-year epochs
 
 |  | PR | SST |
 | --- | --- | --- |
-| mean | [Niño4](docs/res_ave_pr_val_n40e_060_year.md) [Niño3.4](docs/res_ave_pr_val_n34e_060_year.md) [Niño3](docs/res_ave_pr_val_n30e_060_year.md) | [Niño4](docs/res_ave_ts_val_n40e_060_year.md) [Niño3.4](docs/res_ave_ts_val_n34e_060_year.md) [Niño3](docs/res_ave_ts_val_n30e_060_year.md) |
-| variance | [Niño4](docs/res_var_pr_ano_n40e_060_year.md) [Niño3.4](docs/res_var_pr_ano_n34e_060_year.md) [Niño3](docs/res_var_pr_ano_n30e_060_year.md) | [Niño4](docs/res_var_ts_ano_n40e_060_year.md) [Niño3.4](docs/res_var_ts_ano_n34e_060_year.md) [Niño3](docs/res_var_ts_ano_n30e_060_year.md) |
-| skewness | [Niño4](docs/res_ske_pr_ano_n40e_060_year.md) [Niño3.4](docs/res_ske_pr_ano_n34e_060_year.md) [Niño3](docs/res_ske_pr_ano_n30e_060_year.md) | [Niño4](docs/res_ske_ts_ano_n40e_060_year.md) [Niño3.4](docs/res_ske_ts_ano_n34e_060_year.md) [Niño3](docs/res_ske_ts_ano_n30e_060_year.md) |
+| mean | [Niño4](res_ave_pr_val_n40e_060_year.md) [Niño3.4](res_ave_pr_val_n34e_060_year.md) [Niño3](res_ave_pr_val_n30e_060_year.md) | [Niño4](res_ave_ts_val_n40e_060_year.md) [Niño3.4](res_ave_ts_val_n34e_060_year.md) [Niño3](res_ave_ts_val_n30e_060_year.md) |
+| variance | [Niño4](res_var_pr_ano_n40e_060_year.md) [Niño3.4](res_var_pr_ano_n34e_060_year.md) [Niño3](res_var_pr_ano_n30e_060_year.md) | [Niño4](res_var_ts_ano_n40e_060_year.md) [Niño3.4](res_var_ts_ano_n34e_060_year.md) [Niño3](res_var_ts_ano_n30e_060_year.md) |
+| skewness | [Niño4](res_ske_pr_ano_n40e_060_year.md) [Niño3.4](res_ske_pr_ano_n34e_060_year.md) [Niño3](res_ske_pr_ano_n30e_060_year.md) | [Niño4](res_ske_ts_ano_n40e_060_year.md) [Niño3.4](res_ske_ts_ano_n34e_060_year.md) [Niño3](res_ske_ts_ano_n30e_060_year.md) |
