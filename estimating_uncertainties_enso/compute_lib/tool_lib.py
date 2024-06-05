@@ -63,20 +63,27 @@ def tool_put_in_dict(dict_i: dict, value, *args) -> dict:
     return dict_i
 
 
-def tool_read_json() -> dict:
+def tool_read_json(filename: str = None) -> dict:
     """
     Read the json file
 
+    Input:
+    ------
+    :param filename: str
+        json file name to read
+        
     Output:
     -------
     :return dict_o: dict
         Dictionary with nine nested levels [metric, diagnostic or metadata, value or metadata_name, project, dataset,
         experiment, member, epoch_length, epoch], filled with a value
     """
+    if isinstance(filename, str) is False:
+        filename = "estimating_uncertainties_in_simulated_enso.json"
     # data directory (relative to current file directory)
     data_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
     # path to input data file
-    json_file_path = os.path.join(data_directory, "data/estimating_uncertainties_in_simulated_enso.json")
+    json_file_path = os.path.join(data_directory, "data/" + str(filename))
     # load data
     with open(json_file_path) as ff:
         dict_o = json__load(ff)
@@ -121,6 +128,8 @@ def tool_read_netcdf(file_i, variable_i):
             att = att.replace("1e-3", "10$^{-3}$").replace("1e-6", "10$^{-6}$")
             att = att.replace("N/m2", "Pa").replace("N2/m4", "Pa$^{2}$")
             att = att.replace("W/m2", "W.m$^{-2}$").replace("W2/m4", "W$^{2}$.m$^{-4}$")
+            for ii in range(-10, 11):
+                att = att.replace("**" + str(ii), "$^{" + str(ii) + "}$")
         # output attribute name
         name_o = "name_long" if k == "diagnostic_long_name" else ("name_short" if k == "diagnostic_short_name" else k)
         metadata[name_o] = deepcopy(att)

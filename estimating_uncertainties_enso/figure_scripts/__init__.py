@@ -1,10 +1,20 @@
 from . f01_obs_model_and_model_uncertainties import f01_model_uncertainties
-from . f02_uncertaninty_vs_ensemble_size import f02_ensemble_size
-from . f03_uncertaninty_vs_epoch_length import f03_epoch_length
-from . f04_uncertainty_hi_vs_pi import f04_hi_vs_pi
-from . f05_examples_of_res import f05_required_ensemble_size
+from . f02_time_series_to_distributions import f02_creating_distributions
+from . f03_uncertainty_vs_ensemble_size import f03_ensemble_size
+from . f04_uncertainty_vs_epoch_length import f04_epoch_length
+from . f05_uncertainty_hi_vs_pi import f05_hi_vs_pi
+from . f06_examples_of_res import f06_required_ensemble_size
+
 from . s01_data_quality_control import s01_quality_control
-from . s02_time_series_to_distributions import s02_creating_distributions
-from . s03_uncertainty_theory_vs_bootstrap import s03_theory_vs_bootstrap
-from . s04_uncertaninty_vs_epoch_length_ci_with_le import s04_epoch_length
-from . s05_res_theory_vs_bootstrap import s05_theory_vs_bootstrap
+from . s02_uncertainty_theory_vs_bootstrap import s02_theory_vs_bootstrap
+from . s03_uncertainty_vs_ensemble_size_MPI import s03_ensemble_size_mpi
+from . s04_uncertainty_vs_epoch_length_ensemble_size import s04_epoch_length_ensemble_size
+from . s05_uncertainty_vs_epoch_length_pi import s05_epoch_length_pi
+from . s06_res_theory_vs_bootstrap import s06_theory_vs_bootstrap
+
+from . r07_uncertainty_vs_ensemble_size_mean_vs_variance import r07_departure_from_theory
+from . r08_ensemble_mea_vs_ensemble_std import r08_ensemble_mea_vs_std
+from . r09_ensemble_mea_mean_vs_variance import r09_mean_mean_vs_variance
+from . r14_uncertainty_vs_epoch_length_detrending import r14_epoch_length_detrending
+
+from . z01_print_res import z01_print_res

@@ -243,16 +243,18 @@ def tool_figure_initialization(data_diagnostics: list, fig_orientation: str, x_d
         list_dia = deepcopy(data_diagnostics)
         n_panel_per_line = len([k for k in list_dia if "ave_" in k])
     else:
-        list_dia = [k2 for k1 in ["_pr_", "_ts_"] for k2 in data_diagnostics if k1 in k2 and k2[:4] != "nst_"]
+        list_dia = [
+            k2 for k1 in ["_pr_", "_ts_", "_tx_", "_ty_"] for k2 in data_diagnostics if k1 in k2 and k2[:4] != "nst_"]
         n_panel_per_line = len([k for k in list_dia if ("_pr_" in list_dia[0] and "_pr_" in k) or
-                                ("_ts_" in list_dia[0] and "_ts_" in k)])
+                                ("_ts_" in list_dia[0] and "_ts_" in k) or ("_tx_" in list_dia[0] and "_tx_" in k) or
+                                ("_ty_" in list_dia[0] and "_ty_" in k)])
     # number of columns and rows of the plot
     nbr_c = n_panel_per_line * (x_size + x_delt) - x_delt
     nbr_l = math__ceil(len(list_dia) / n_panel_per_line) * (y_size + y_delt) - y_delt
     return list_dia, n_panel_per_line, nbr_c, nbr_l
 
 
-def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, legend_dict: dict, legend_list: list,
+def tool_legend_datasets(list_legend: list, fig_colors: dict, fig_markers: dict, legend_dict: dict, legend_list: list,
                          data_diagnostics: list, counter: int, n_panel_per_line: int, fig_legend_position: str,
                          x_frac: float, x_size: int, y_frac: float, y_size: int):
     """
@@ -260,8 +262,8 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
     
     Inputs:
     -------
-    :param dict_i: dict
-        Dictionary of data to plot, the first level must be the datasets
+    :param list_legend: list
+        Dataset names to put in the legend
     :param fig_colors: dict
         Dictionary with one level [dataset], filled with the color to plot each dataset;
         e.g., fig_colors = {'ACCESS-CM2': 'orange', 'ACCESS-ESM1-5': 'forestgreen'}
@@ -301,7 +303,7 @@ def tool_legend_datasets(dict_i: dict, fig_colors: dict, fig_markers: dict, lege
     if (fig_legend_position == "bottom" and counter == len(data_diagnostics) - n_panel_per_line) or (
             fig_legend_position == "right" and counter + 1 == n_panel_per_line):
         # add markers and dataset names at the bottom or top right of the figure
-        list_datasets = [k for k in list(fig_markers.keys()) if k in list(dict_i.keys())]
+        list_datasets = [k for k in list(fig_markers.keys()) if k in list_legend]
         if fig_legend_position == "bottom":
             n_dat_per_col = math__ceil(len(list_datasets) / (n_panel_per_line * 2))
             x0, x1, y0, y1 = -35, 70, -25, 8

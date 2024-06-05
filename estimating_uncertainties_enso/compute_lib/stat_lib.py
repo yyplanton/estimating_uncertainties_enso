@@ -16,12 +16,14 @@ from math import factorial as math__factorial
 from random import sample as random__sample
 # numpy
 from numpy import array as numpy__array
+from numpy import median as numpy__median
 from numpy import ndarray as numpy__ndarray
 from numpy.random import randint as numpy__random__randint
 # scipy
 from scipy.stats import linregress as scipy__stats__linregress
 from scipy.stats import norm as scipy__stats__norm
 from scipy.stats import scoreatpercentile as scipy__stats__scoreatpercentile
+from scipy.stats import skew as scipy__stats__skew
 from scipy.stats import t as scipy__stats__t
 # estimating_uncertainties_enso package
 from . check_lib import check_integer_even_or_odd, check_interval, check_list, check_type, print_fail
@@ -31,6 +33,25 @@ from . check_lib import check_integer_even_or_odd, check_interval, check_list, c
 # ---------------------------------------------------------------------------------------------------------------------#
 # Functions
 # ---------------------------------------------------------------------------------------------------------------------#
+def stat_iqr(arr_i, axis=None):
+    """
+    Compute the interquartile range (IQR) along the given axis using scipy
+
+    Inputs:
+    -------
+    :param arr_i: array_like
+    :param axis: None or int, optional
+        Axis along which the mean is computed
+        Default is None (compute IQR of the flattened array)
+
+    Output:
+    -------
+    :return: ndarray
+        array containing the IQR values
+    """
+    return scipy__stats__scoreatpercentile(arr_i, 75, axis=axis) - scipy__stats__scoreatpercentile(arr_i, 25, axis=axis)
+
+
 def stat_mean(arr_i, axis=None):
     """
     Compute the mean along the given axis using numpy
@@ -48,6 +69,44 @@ def stat_mean(arr_i, axis=None):
         array containing the mean values
     """
     return numpy__array(arr_i).mean(axis=axis)
+
+
+def stat_median(arr_i, axis=None):
+    """
+    Compute the median along the given axis using numpy
+
+    Inputs:
+    -------
+    :param arr_i: array_like
+    :param axis: None or int, optional
+        Axis along which the mean is computed
+        Default is None (compute median of the flattened array)
+
+    Output:
+    -------
+    :return: ndarray
+        array containing the median values
+    """
+    return numpy__median(arr_i, axis=axis)
+
+
+def stat_skewness(arr_i, axis=None):
+    """
+    Compute the skewness along the given axis using scipy
+
+    Inputs:
+    -------
+    :param arr_i: array_like
+    :param axis: None or int, optional
+        Axis along which the skewness is computed
+        Default is None (compute skewness of the flattened array)
+
+    Output:
+    -------
+    :return: ndarray
+        Array containing the skewness values
+    """
+    return scipy__stats__skew(arr_i, axis=axis)
 
 
 def stat_standard_deviation(arr_i, axis=None):
@@ -107,8 +166,8 @@ def stat_variance_to_mean2(arr_i, axis=None):
     return numpy__array(arr_i).var(axis=axis) / numpy__array(arr_i).mean(axis=axis)**2
 
 
-dic_stat = {"mea": stat_mean, "std": stat_standard_deviation, "var": stat_variance,
-            "var_to_mea2": stat_variance_to_mean2}
+dic_stat = {"iqr": stat_iqr, "mea": stat_mean, "med": stat_median, "ske": stat_skewness, "std": stat_standard_deviation,
+            "var": stat_variance, "var_to_mea2": stat_variance_to_mean2}
 
 
 def stat_bootstrap(arr_i, statistic: str, nbr_resamples: int, sample_size: int):
@@ -120,7 +179,7 @@ def stat_bootstrap(arr_i, statistic: str, nbr_resamples: int, sample_size: int):
     :param arr_i: array_like
     :param statistic: str
         Name of a statistic; e.g., statistic = 'mea'
-        Four statistics are defined: 'mea', 'std', 'var', 'var_to_mea2'
+        Seven statistics are defined: 'iqr', 'mea', 'med', 'ske', 'std', 'var', 'var_to_mea2'
     :param nbr_resamples: int
         Number of samples to generate; e.g., nbr_resamples = 1000
     :param sample_size: int
@@ -204,7 +263,7 @@ def stat_combination_random(arr_i, statistic: str, nbr_combinations: int, sample
     :param arr_i: array_like
     :param statistic: str
         Name of a statistic; e.g., statistic = 'mea'
-        Four statistics are defined: 'mea', 'std', 'var', 'var_to_mea2'
+        Seven statistics are defined: 'iqr', 'mea', 'med', 'ske', 'std', 'var', 'var_to_mea2'
     :param nbr_combinations: int
         Maximum number of combinations to use; e.g., nbr_combinations = 1000
     :param sample_size: int
@@ -237,7 +296,7 @@ def stat_compute_statistic(arr_i, statistic: str):
     :param arr_i: array_like
     :param statistic: str
         Name of a statistic; e.g., statistic = 'mea'
-        Four statistics are defined: 'mea', 'std', 'var', 'var_to_mea2'
+        Seven statistics are defined: 'iqr', 'mea', 'med', 'ske', 'std', 'var', 'var_to_mea2'
 
     Output:
     -------

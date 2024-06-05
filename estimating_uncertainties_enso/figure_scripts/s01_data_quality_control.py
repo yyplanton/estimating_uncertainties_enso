@@ -42,8 +42,10 @@ default = {
     "fig_years_per_panel": 500,
     # figure format: eps, pdf, png, svg
     "fig_format": default_parameters["fig_format"],
+    # something added to figure name by user: str
+    "fig_name_add": "",
     # figure name includes input parameters (may create a very long figure name)
-    "fig_detailed_name": False,
+    "fig_name_details": False,
     # size of each panel
     "fig_panel_size": {"x_delt": 0, "x_frac": 1, "x_size": 16, "y_delt": 3, "y_frac": 0.2, "y_size": 6},
     # color per dataset
@@ -87,27 +89,30 @@ default = {
 # ---------------------------------------------------------------------------------------------------------------------#
 # Main
 # ---------------------------------------------------------------------------------------------------------------------#
-def s01_quality_control(data_diagnostics: list = default["data_diagnostics"],
-                        data_epoch_lengths: list = default["data_epoch_lengths"],
-                        data_experiments: list = default["data_experiments"],
-                        data_projects: list = default["data_projects"],
-                        data_smile_minimum_size: int = default["data_smile_minimum_size"],
-                        fig_box_linestyle: str = default["fig_box_linestyle"],
-                        fig_box_linewidth: float = default["fig_box_linewidth"],
-                        fig_box_mean_size: float = default["fig_box_mean_size"],
-                        fig_box_outlier_size: float = default["fig_box_outlier_size"],
-                        fig_colors: dict = default["fig_colors"],
-                        fig_cur_linecolor: str = default["fig_cur_linecolor"],
-                        fig_cur_linestyle: str = default["fig_cur_linestyle"],
-                        fig_cur_linewidth: float = default["fig_cur_linewidth"],
-                        fig_detailed_name: bool = default["fig_detailed_name"],
-                        fig_format: str = default["fig_format"],
-                        fig_panel_size: dict = default["fig_panel_size"],
-                        fig_ticks: dict = default["fig_ticks"],
-                        fig_titles: dict = default["fig_titles"],
-                        fig_years_per_panel: int = default["fig_years_per_panel"],
-                        panel_param_box: dict = default["panel_param_box"],
-                        panel_param_tim: dict = default["panel_param_tim"], **kwargs):
+def s01_quality_control(
+        data_diagnostics: list = default["data_diagnostics"],
+        data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_experiments: list = default["data_experiments"],
+        data_projects: list = default["data_projects"],
+        data_smile_minimum_size: int = default["data_smile_minimum_size"],
+        fig_box_linestyle: str = default["fig_box_linestyle"],
+        fig_box_linewidth: float = default["fig_box_linewidth"],
+        fig_box_mean_size: float = default["fig_box_mean_size"],
+        fig_box_outlier_size: float = default["fig_box_outlier_size"],
+        fig_colors: dict = default["fig_colors"],
+        fig_cur_linecolor: str = default["fig_cur_linecolor"],
+        fig_cur_linestyle: str = default["fig_cur_linestyle"],
+        fig_cur_linewidth: float = default["fig_cur_linewidth"],
+        fig_format: str = default["fig_format"],
+        fig_name_add: str = default["fig_name_add"],
+        fig_name_details: bool = default["fig_name_details"],
+        fig_panel_size: dict = default["fig_panel_size"],
+        fig_ticks: dict = default["fig_ticks"],
+        fig_titles: dict = default["fig_titles"],
+        fig_years_per_panel: int = default["fig_years_per_panel"],
+        panel_param_box: dict = default["panel_param_box"],
+        panel_param_tim: dict = default["panel_param_tim"],
+        **kwargs):
     #
     # -- Read json
     #
@@ -148,8 +153,8 @@ def s01_quality_control(data_diagnostics: list = default["data_diagnostics"],
     # -- Figure
     #
     # output figure name will be the file name (path removed and extension removed)
-    fig_name = __file__.split("/")[-1].split(".")[0]
-    if fig_detailed_name is True:
+    fig_name = __file__.split("/")[-1].split(".")[0] + str(fig_name_add)
+    if fig_name_details is True:
         # add details of the computation to the figure name
         fig_name += "_data_" + str(len(data_projects)) + "pro_" + str(len(data_experiments)) + "exp_" + \
                     str(data_smile_minimum_size) + "mem_" + str(len(data_diagnostics)) + "dia_"

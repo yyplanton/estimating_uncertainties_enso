@@ -133,7 +133,7 @@ def nest_compute_statistic(dict_i, statistic: str, dict_o: dict = None, list_k: 
         list of values
     :param statistic: str
         Name of a statistic; e.g., statistic = 'mea'
-        Four statistics are defined: 'mea', 'std', 'var', 'var_to_mea2'
+        Seven statistics are defined: 'iqr', 'mea', 'med', 'ske', 'std', 'var', 'var_to_mea2'
     :param dict_o: dict or None, optional
         Dictionary in which output values will be stored
     :param list_k: list or None, optional
@@ -312,7 +312,7 @@ def nest_compute_uncertainty_hi_vs_pi(dict_i: dict, uncertainty_confidence_inter
     Output:
     -------
     :return dict_o: dict
-        Dictionary with four nested levels [diagnostic, dataset, x-or-y], filled with the values to plot
+        Dictionary with four nested levels [epoch length, diagnostic, dataset, x-or-y], filled with the values to plot
     """
     # check input
     error = list()
@@ -368,8 +368,8 @@ def nest_compute_uncertainty_hi_vs_pi(dict_i: dict, uncertainty_confidence_inter
                         # epoch was kept)
                         uncertainty_exp = stat_compute_statistic(uncertainty_exp, "mea")
                         # save values
-                        dict_o = tool_put_in_dict(dict_o, [uncertainty_ref], dia, dat, "x")
-                        dict_o = tool_put_in_dict(dict_o, [uncertainty_exp], dia, dat, "y")
+                        dict_o = tool_put_in_dict(dict_o, [uncertainty_ref], dur, dia, dat, "x")
+                        dict_o = tool_put_in_dict(dict_o, [uncertainty_exp], dur, dia, dat, "y")
     return dict_o
 
 
@@ -813,4 +813,63 @@ def nest_quality_control_time_series(dict_i: dict, epoch_length: str) -> dict:
                 dict_o = tool_put_in_dict(dict_o, arr_x, dia, dat, "curve", "x")
                 dict_o = tool_put_in_dict(dict_o, arr_y, dia, dat, "curve", "y")
     return dict_o
+
+
+def nest_standardize_distributions(dict_i, dict_o: dict = None, list_k: tuple = None,
+                                   list_k_last: tuple = None) -> (dict, tuple, tuple):
+    """
+    Compute standardize distributions within the nested dictionary
+
+    Inputs:
+    -------
+    :param dict_i: dict
+        Dictionary with six nested levels [diagnostic, epoch_length, project, experiment, dataset, epoch], filled with a
+        list of values
+    :param dict_o: dict or None, optional
+        Dictionary in which output values will be stored
+    :param list_k: list or None, optional
+        List of keys, in order, for the output nested dictionary
+    :param list_k_last: list or None, optional
+        List of the last key of each nested level, in order, to keep track of the position within the input nested
+        dictionary
+
+    Outputs:
+    --------
+    :return dict_o: dict
+        Dictionary with seven nested levels [diagnostic, epoch_length, project, experiment, dataset, epoch], filled the
+        desired statistical value
+    :return list_k: tuple
+    :return list_k_last: tuple
+    """
+    # check input
+    error = list()
+    if dict_o is None:
+        dict_o = {}
+    if list_k is None:
+        list_k = ()
+    if list_k_last is None:
+        list_k_last = ()
+    check_type(dict_i, "dict_i", (dict, float, int, list, numpy__ndarray), error)
+    check_type(dict_o, "dict_o", dict, error)
+    check_type(list_k, "list_k", tuple, error)
+    check_type(list_k_last, "list_k_last", tuple, error)
+    print_fail(inspect__stack(), "\n".join(k for k in error))
+    # loop through nested levels
+    if isinstance(dict_i, dict) is True:
+        list_keys = sorted(list(dict_i.keys()), key=str.casefold)
+        for k in list_keys:
+            dict_o, list_k, list_k_last = nest_standardize_distributions(
+                dict_i[k], dict_o=dict_o, list_k=list_k + (k,), list_k_last=list_k_last + (list_keys[-1],))
+    else:
+        # compute median
+        median = stat_compute_statistic(dict_i, "med")
+        # compute standard deviation
+        standard_deviation = stat_compute_statistic(dict_i, "iqr")
+        # standardize distribution
+        value = list((numpy__array(dict_i) - median) / standard_deviation)
+        # save values
+        dict_o = tool_put_in_dict(dict_o, value, *list_k)
+        # remove relevant keys from the tuples of keys
+        list_k, list_k_last = tool_tuple_for_dict(list_k, list_k_last)
+    return dict_o, list_k, list_k_last
 # ---------------------------------------------------------------------------------------------------------------------#

@@ -119,9 +119,10 @@ def data_one_smile_per_model(list_datasets) -> list:
 
 def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_projects: list, data_experiments: list,
                        data_mme_create: bool = False, data_mme_use_all_smiles: bool = True,
-                       data_mme_use_smile_mean: bool = False, data_observations_desired: dict = None,
-                       data_smile_minimum_size: int = 1, data_smile_rejected: list = None,
-                       data_smile_require_all_experiments: bool = False, members_as_list: bool = True) -> (dict, dict):
+                       data_mme_use_smile_mean: bool = False, data_filename: str = None,
+                       data_observations_desired: dict = None, data_smile_minimum_size: int = 1,
+                       data_smile_rejected: list = None, data_smile_require_all_experiments: bool = False,
+                       members_as_list: bool = True) -> (dict, dict):
     """
     Read json dictionary and select values
 
@@ -131,6 +132,8 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
         Diagnostic names; e.g., data_diagnostics = ['var_pr_ano_nin3', 'var_ts_ano_nin3']
     :param data_epoch_lengths: list
         Epoch length names; e.g., data_epoch_lengths = ['030_year_epoch', '150_year_epoch']
+    :param data_filename: str
+        json file name to read
     :param data_projects: list
         Project names; e.g., data_projects = ['cmip6', 'observations']
     :param data_experiments: list
@@ -192,7 +195,7 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
     check_type(members_as_list, "members_as_list", bool, error)
     print_fail(inspect__stack(), "\n".join(k for k in error))
     # read input json file
-    dict_i = tool_read_json()
+    dict_i = tool_read_json(filename=data_filename)
     # output metadata and value dictionaries
     dict_diagnostics, dict_metadata = {}, {}
     # list desired diagnostics that are available
@@ -305,7 +308,26 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
         unit = unit.replace("1e-3", "10$^{-3}$").replace("1e-6", "10$^{-6}$")
         unit = unit.replace("N/m2", "Pa").replace("N2/m4", "Pa$^{2}$")
         unit = unit.replace("W/m2", "W.m$^{-2}$").replace("W2/m4", "W$^{2}$.m$^{-4}$")
+        for ii in range(-10, 11):
+            unit = unit.replace("**" + str(ii), "$^{" + str(ii) + "}$")
         dict_metadata[dia] = {"method": method, "name_long": name_long, "name_short": name_short, "units": unit}
+    # check if empty dictionary level is empty
+    for dia in list(dict_diagnostics.keys()):
+        for dur in list(dict_diagnostics[dia].keys()):
+            for pro in list(dict_diagnostics[dia][dur].keys()):
+                for exp in list(dict_diagnostics[dia][dur][pro].keys()):
+                    for dat in list(dict_diagnostics[dia][dur][pro][exp].keys()):
+                        if len(list(dict_diagnostics[dia][dur][pro][exp][dat].keys())) == 0:
+                            del dict_diagnostics[dia][dur][pro][exp][dat]
+                    if len(list(dict_diagnostics[dia][dur][pro][exp].keys())) == 0:
+                        del dict_diagnostics[dia][dur][pro][exp]
+                if len(list(dict_diagnostics[dia][dur][pro].keys())) == 0:
+                    del dict_diagnostics[dia][dur][pro]
+            if len(list(dict_diagnostics[dia][dur].keys())) == 0:
+                del dict_diagnostics[dia][dur]
+        if len(list(dict_diagnostics[dia].keys())) == 0:
+            del dict_diagnostics[dia]
+            del dict_metadata[dia]
     return dict_diagnostics, dict_metadata
 
 

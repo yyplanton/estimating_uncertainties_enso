@@ -48,8 +48,10 @@ default = {
     "fig_smile_selected": default_parameters["fig_smile_selected"],
     # figure format: eps, pdf, png, svg
     "fig_format": default_parameters["fig_format"],
+    # something added to figure name by user: str
+    "fig_name_add": "",
     # figure name includes input parameters (may create a very long figure name)
-    "fig_detailed_name": False,
+    "fig_name_details": False,
     # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # position of the legend on the plot: bottom, right
@@ -102,28 +104,31 @@ default = {
 # ---------------------------------------------------------------------------------------------------------------------#
 # Main
 # ---------------------------------------------------------------------------------------------------------------------#
-def f01_model_uncertainties(data_diagnostics: list = default["data_diagnostics"],
-                            data_epoch_lengths: list = default["data_epoch_lengths"],
-                            data_projects: list = default["data_projects"],
-                            data_experiments: list = default["data_experiments"],
-                            data_mme_create: bool = default["data_mme_create"],
-                            data_mme_use_all_smiles: bool = default["data_mme_use_all_smiles"],
-                            data_mme_use_smile_mean: bool = default["data_mme_use_smile_mean"],
-                            data_observations_desired: dict = default["data_observations_desired"],
-                            data_smile_rejected: list = default["data_smile_rejected"],
-                            fig_colors: dict = default["fig_colors"],
-                            fig_detailed_name: bool = default["fig_detailed_name"],
-                            fig_format: str = default["fig_format"],
-                            fig_legend_position: str = default["fig_legend_position"],
-                            fig_linestyle: str = default["fig_linestyle"],
-                            fig_linewidth: float = default["fig_linewidth"],
-                            fig_orientation: str = default["fig_orientation"],
-                            fig_panel_size: dict = default["fig_panel_size"],
-                            fig_smile_selected: str = default["fig_smile_selected"],
-                            fig_ticks: dict = default["fig_ticks"],
-                            fig_titles: dict = default["fig_titles"],
-                            panel_param_box: dict = default["panel_param_box"],
-                            panel_param_map: dict = default["panel_param_map"], **kwargs):
+def f01_model_uncertainties(
+        data_diagnostics: list = default["data_diagnostics"],
+        data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_projects: list = default["data_projects"],
+        data_experiments: list = default["data_experiments"],
+        data_mme_create: bool = default["data_mme_create"],
+        data_mme_use_all_smiles: bool = default["data_mme_use_all_smiles"],
+        data_mme_use_smile_mean: bool = default["data_mme_use_smile_mean"],
+        data_observations_desired: dict = default["data_observations_desired"],
+        data_smile_rejected: list = default["data_smile_rejected"],
+        fig_colors: dict = default["fig_colors"],
+        fig_format: str = default["fig_format"],
+        fig_legend_position: str = default["fig_legend_position"],
+        fig_linestyle: str = default["fig_linestyle"],
+        fig_linewidth: float = default["fig_linewidth"],
+        fig_name_add: str = default["fig_name_add"],
+        fig_name_details: bool = default["fig_name_details"],
+        fig_orientation: str = default["fig_orientation"],
+        fig_panel_size: dict = default["fig_panel_size"],
+        fig_smile_selected: str = default["fig_smile_selected"],
+        fig_ticks: dict = default["fig_ticks"],
+        fig_titles: dict = default["fig_titles"],
+        panel_param_box: dict = default["panel_param_box"],
+        panel_param_map: dict = default["panel_param_map"],
+        **kwargs):
     #
     # -- Read json
     #
@@ -186,8 +191,8 @@ def f01_model_uncertainties(data_diagnostics: list = default["data_diagnostics"]
     # -- Figure
     #
     # output figure name will be the file name (path removed and extension removed)
-    fig_name = __file__.split("/")[-1].split(".")[0]
-    if fig_detailed_name is True:
+    fig_name = __file__.split("/")[-1].split(".")[0] + str(fig_name_add)
+    if fig_name_details is True:
         # add details of the computation to the figure name
         fig_name += "_data_" + str(len(data_projects)) + "pro_" + str(len(data_experiments)) + "exp_" + \
                     str(len(data_diagnostics)) + "dia"
