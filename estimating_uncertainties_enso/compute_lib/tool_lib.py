@@ -122,12 +122,8 @@ def tool_read_netcdf(file_i, variable_i):
         if k == "diagnostic_short_name":
             att = att.replace("AVE", r"$\bar{x}$").replace("SKE", "g$_1$").replace("STD", r"$\sigma$")
             att = att.replace("VAR", r"$\sigma^2$").replace("n*", "n$^{*}$")
-        else:
-            att = att.replace("degC", "$^\circ$C").replace("C2", "C$^2$")
-            att = att.replace("mm/day", "mm.day$^{-1}$").replace("mm2/day2", "mm$^{2}$.day$^{-2}$")
-            att = att.replace("1e-3", "10$^{-3}$").replace("1e-6", "10$^{-6}$")
-            att = att.replace("N/m2", "Pa").replace("N2/m4", "Pa$^{2}$")
-            att = att.replace("W/m2", "W.m$^{-2}$").replace("W2/m4", "W$^{2}$.m$^{-4}$")
+        elif k == "units":
+            att = att.replace("degC", "$^\circ$C").replace("1e", "10")
             for ii in range(-10, 11):
                 att = att.replace("**" + str(ii), "$^{" + str(ii) + "}$")
         # output attribute name

@@ -48,24 +48,16 @@ user_defined_parameters = {
     # "data_diagnostics": ["ave_ts_val_n40e", "ave_ts_val_n34e", "ave_ts_val_n30e",
     #                      "var_ts_ano_n40e", "var_ts_ano_n34e", "var_ts_ano_n30e",
     #                      "ske_ts_ano_n40e", "ske_ts_ano_n34e", "ske_ts_ano_n30e"],
-    # "data_diagnostics": ["ave_tx_val_n40e", "ave_tx_val_n34e", "ave_tx_val_n30e",
-    #                      "var_tx_ano_n40e", "var_tx_ano_n34e", "var_tx_ano_n30e",
-    #                      "ske_tx_ano_n40e", "ske_tx_ano_n34e", "ske_tx_ano_n30e"],
-    # "data_diagnostics": ["ave_ty_val_n40e", "ave_ty_val_n34e", "ave_ty_val_n30e",
-    #                      "var_ty_ano_n40e", "var_ty_ano_n34e", "var_ty_ano_n30e",
-    #                      "ske_ty_ano_n40e", "ske_ty_ano_n34e", "ske_ty_ano_n30e"],
     # compute uncertainty based on theory (or bootstrap): True, False
-    "uncertainty_theory": True,
+    # "uncertainty_theory": True,
     # compute relative uncertainty (or absolute): True, False
-    "uncertainty_relative": False,
+    # "uncertainty_relative": False,
     # confidence interval of the uncertainty: float [0, 100]
-    "uncertainty_confidence_interval": 95,
+    # "uncertainty_confidence_interval": 95,
     # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
-    "uncertainty_combinations": 10000,
-    # "uncertainty_combinations": 1000,
+    # "uncertainty_combinations": 10000,
     # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
-    "uncertainty_resamples": 1000000,
-    # "uncertainty_resamples": 10000,
+    # "uncertainty_resamples": 1000000,
     # if you changed any default parameter, you should create your own axis ticks for the figure or pass an empty
     # dictionary (i.e., fig_ticks = {}). To create your own axis ticks, the general structure is:
     # fig_ticks = {"x_axis": {"diagnostic_1": []}, "y_axis": {"diagnostic_1": []}}

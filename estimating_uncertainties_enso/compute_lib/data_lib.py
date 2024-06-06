@@ -303,11 +303,7 @@ def data_organize_json(data_diagnostics: list, data_epoch_lengths: list, data_pr
         name_short = dict_i[dia]["metadata"]["diagnostic_short_name"].replace("AVE", r"$\bar{x}$")
         name_short = name_short.replace("SKE", "g$_1$").replace("STD", r"$\sigma$").replace("VAR", r"$\sigma^2$")
         name_short = name_short.replace("n*", "n$^{*}$")
-        unit = dict_i[dia]["metadata"]["units"].replace("degC", "$^\circ$C").replace("C2", "C$^2$")
-        unit = unit.replace("mm/day", "mm.day$^{-1}$").replace("mm2/day2", "mm$^{2}$.day$^{-2}$")
-        unit = unit.replace("1e-3", "10$^{-3}$").replace("1e-6", "10$^{-6}$")
-        unit = unit.replace("N/m2", "Pa").replace("N2/m4", "Pa$^{2}$")
-        unit = unit.replace("W/m2", "W.m$^{-2}$").replace("W2/m4", "W$^{2}$.m$^{-4}$")
+        unit = dict_i[dia]["metadata"]["units"].replace("degC", "$^\circ$C").replace("1e", "10")
         for ii in range(-10, 11):
             unit = unit.replace("**" + str(ii), "$^{" + str(ii) + "}$")
         dict_metadata[dia] = {"method": method, "name_long": name_long, "name_short": name_short, "units": unit}
