@@ -4,6 +4,15 @@
 
 #### GitHub [repository](https://github.com/yyplanton/estimating_uncertainties_enso/)
 
+#### Install
+This method uses [pip](https://pip.pypa.io/en/stable/installation/)  
+Download the release  
+Enter the directory: `cd estimating_uncertainties_enso`  
+If you haven't already installed virtualenv: `pip install virtualenv`  
+Create your new environment (called 'enso_uncertainties'): `virtualenv estimating_uncertainties_enso`  
+Activate your new environment: `source estimating_uncertainties_enso/bin/activate`  
+Install the requirements in the current environment: `pip install -r requirements.txt`
+
 
 ## Project
 To model the climate, scientists often generate an ensemble of simulations with a given climate model and given forcings (e.g., volcanic eruptions, greenhouse gas emissions) but different plausible initial conditions. These different initial conditions represent the uncertainties on the Earth’s climate conditions at the start of the simulation. As Earth’s climate naturally fluctuates on multiple timescales (‘internal variability’), each simulation of the ensemble represents a possible evolution of the climate. By averaging the climate over a large enough ensemble, one can separate the internal variability from forced changes (e.g., changes forced by greenhouse gas emissions). But what does ‘large enough’ means?  
