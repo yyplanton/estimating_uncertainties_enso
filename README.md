@@ -4,6 +4,8 @@
 
 #### GitHub [repository](https://github.com/yyplanton/estimating_uncertainties_enso/)
 
+[![DOI](https://zenodo.org/badge/724324199.svg)](https://zenodo.org/doi/10.5281/zenodo.11512024)
+
 #### Install
 This method uses [pip](https://pip.pypa.io/en/stable/installation/)  
 Download the release  
