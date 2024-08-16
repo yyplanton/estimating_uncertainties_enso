@@ -78,7 +78,7 @@ user_defined_parameters = {
     # confidence interval of the uncertainty: float [0, 100]
     # "uncertainty_confidence_interval": 95,
     # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
-    # "uncertainty_combinations": 5000,
+    # "uncertainty_combinations": 10000,
     # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     # "uncertainty_resamples": 1000000,
     # if you changed any default parameter, you should create your own axis ticks for the figure or pass an empty
@@ -86,8 +86,7 @@ user_defined_parameters = {
     # fig_ticks = {"x_axis": {"diagnostic_1": []}, "y_axis": {"diagnostic_1": []}}
     # "fig_ticks": {},
     # something added to figure name to make it different from the standard name: str
-    # "fig_name_add": "_hf_fbk",
-    "fig_format": "png",
+    # "fig_name_add": "",
 }
 
 if __name__ == '__main__':
