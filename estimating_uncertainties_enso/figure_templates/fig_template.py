@@ -128,7 +128,6 @@ def fig_basic(
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -431,7 +430,6 @@ def fig_distribution_and_ensemble_size(
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -562,7 +560,6 @@ def fig_examples_of_res(dict_i: dict, data_diagnostics: list, fig_format: str, f
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -779,7 +776,6 @@ def fig_influence_of(dict_i: dict, data_diagnostics: list, data_experiments: lis
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -967,7 +963,6 @@ def fig_presentation_uncertainties(dict_i: dict, data_diagnostics: list, fig_for
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -1060,61 +1055,62 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
     #
     # -- Time series
     #
-    dia = list(dict_time_series.keys())[0]
-    n_panel = 4
-    for ii in range(n_panel):
-        kwarg = {**panel_param_tim, **{"x_size": x_size * x_frac, "y_size": y_size * y_frac}}
-        # dictionary
-        d1 = dict_time_series[dia]
-        # list datasets
-        list_dat = sorted(list(d1.keys()), key=str.casefold)
-        # curves to plot
-        arr_c = [fig_colors["curve"][dat] if dat in list(fig_colors["curve"].keys()) else fig_cur_linecolor
-                 for dat in list_dat]
-        arr_ls = [fig_cur_linestyle] * len(list_dat)
-        arr_lw = [fig_cur_linewidth] * len(list_dat)
-        arr_x = [d1[dat]["curve"]["x"] for dat in list_dat]
-        arr_y = [d1[dat]["curve"]["y"] for dat in list_dat]
-        arr_z = [2 if dat in list(fig_colors["curve"].keys()) else 1 for dat in list_dat]
-        kwarg.update({"cur_c": arr_c, "cur_ls": arr_ls, "cur_lw": arr_lw, "cur_x": arr_x, "cur_y": arr_y,
-                      "cur_z": arr_z})
-        # title
-        if ii == 0:
-            kwarg["title"] = numbering[counter]
-        # x-axis
-        kwarg["x_tic"] = [k + ii * fig_years_per_panel * 12 for k in range(0, fig_years_per_panel * 12, 100 * 12)]
-        kwarg["x_lab"] = [str(int(k / 12)) for k in kwarg["x_tic"]]
-        kwarg["x_lim"] = [ii * fig_years_per_panel * 12, (ii + 1) * fig_years_per_panel * 12 - 1]
-        if ii == n_panel - 1:
-            kwarg["x_nam"] = fig_titles["x_axis"][dia]
-        # y-axis
-        kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=arr_y)
-        # legend
-        if ii == 0:
-            leg_t = [dat for dat in list_dat if dat in list(fig_colors["curve"].keys())]
-            leg_d = {}
-            for k1, k2 in enumerate(leg_t):
-                leg_d[k2] = {"text": {"color": fig_colors["curve"][k2], "fontsize": 12}}
-                leg_d[k2]["position"] = {"x": (10 + k1 * 70) * default_plot["size_x"] / (x_size * x_frac), "y": 80}
-            kwarg.update({"legend_param": leg_d, "legend_txt": leg_t})
-        # text
-        if (n_panel % 2 == 0 and ii == (n_panel / 2 - 1)) or (n_panel % 2 == 1 and ii == (n_panel - 1) / 2):
-            x1, x2, y1, y2 = kwarg["x_lim"] + kwarg["y_lim"]
-            dx = (x2 - x1) * default_plot["size_x"] / (x_size * x_frac * 100)
-            dy = (y2 - y1) / 100
-            arr_x = [x1 - 28 * dx]
-            if n_panel % 2 == 0:
-                arr_y = [y1 - 50 * (y_delt / y_size) * dy]
-            else:
-                arr_y = [y1 + 50 * dy]
-            kwarg.update({"text": [fig_titles["y_axis"][dia]], "text_c": ["k"], "text_ha": ["center"], "text_r": [90],
-                          "text_x": arr_x, "text_y": arr_y})
-        # plot
-        ax = plt.subplot(gs[y_position: y_position + y_size, x_position: x_position + x_size])
-        plot_main(ax, **kwarg)
-        y_position += y_size + y_delt
-    counter += 1
-    y_position += y_delt
+    if len(list(dict_time_series.keys())) == 1:
+        dia = list(dict_time_series.keys())[0]
+        n_panel = 4
+        for ii in range(n_panel):
+            kwarg = {**panel_param_tim, **{"x_size": x_size * x_frac, "y_size": y_size * y_frac}}
+            # dictionary
+            d1 = dict_time_series[dia]
+            # list datasets
+            list_dat = sorted(list(d1.keys()), key=str.casefold)
+            # curves to plot
+            arr_c = [fig_colors["curve"][dat] if dat in list(fig_colors["curve"].keys()) else fig_cur_linecolor
+                     for dat in list_dat]
+            arr_ls = [fig_cur_linestyle] * len(list_dat)
+            arr_lw = [fig_cur_linewidth] * len(list_dat)
+            arr_x = [d1[dat]["curve"]["x"] for dat in list_dat]
+            arr_y = [d1[dat]["curve"]["y"] for dat in list_dat]
+            arr_z = [2 if dat in list(fig_colors["curve"].keys()) else 1 for dat in list_dat]
+            kwarg.update({"cur_c": arr_c, "cur_ls": arr_ls, "cur_lw": arr_lw, "cur_x": arr_x, "cur_y": arr_y,
+                          "cur_z": arr_z})
+            # title
+            if ii == 0:
+                kwarg["title"] = numbering[counter]
+            # x-axis
+            kwarg["x_tic"] = [k + ii * fig_years_per_panel * 12 for k in range(0, fig_years_per_panel * 12, 100 * 12)]
+            kwarg["x_lab"] = [str(int(k / 12)) for k in kwarg["x_tic"]]
+            kwarg["x_lim"] = [ii * fig_years_per_panel * 12, (ii + 1) * fig_years_per_panel * 12 - 1]
+            if ii == n_panel - 1:
+                kwarg["x_nam"] = fig_titles["x_axis"][dia]
+            # y-axis
+            kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=arr_y)
+            # legend
+            if ii == 0:
+                leg_t = [dat for dat in list_dat if dat in list(fig_colors["curve"].keys())]
+                leg_d = {}
+                for k1, k2 in enumerate(leg_t):
+                    leg_d[k2] = {"text": {"color": fig_colors["curve"][k2], "fontsize": 12}}
+                    leg_d[k2]["position"] = {"x": (10 + k1 * 70) * default_plot["size_x"] / (x_size * x_frac), "y": 80}
+                kwarg.update({"legend_param": leg_d, "legend_txt": leg_t})
+            # text
+            if (n_panel % 2 == 0 and ii == (n_panel / 2 - 1)) or (n_panel % 2 == 1 and ii == (n_panel - 1) / 2):
+                x1, x2, y1, y2 = kwarg["x_lim"] + kwarg["y_lim"]
+                dx = (x2 - x1) * default_plot["size_x"] / (x_size * x_frac * 100)
+                dy = (y2 - y1) / 100
+                arr_x = [x1 - 28 * dx]
+                if n_panel % 2 == 0:
+                    arr_y = [y1 - 50 * (y_delt / y_size) * dy]
+                else:
+                    arr_y = [y1 + 50 * dy]
+                kwarg.update({"text": [fig_titles["y_axis"][dia]], "text_c": ["k"], "text_ha": ["center"],
+                              "text_r": [90], "text_x": arr_x, "text_y": arr_y})
+            # plot
+            ax = plt.subplot(gs[y_position: y_position + y_size, x_position: x_position + x_size])
+            plot_main(ax, **kwarg)
+            y_position += y_size + y_delt
+        counter += 1
+        y_position += y_delt
     #
     # -- Boxplots
     #
@@ -1183,7 +1179,6 @@ def fig_quality_control(dict_distributions: dict, dict_time_series: dict, data_d
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -1382,7 +1377,6 @@ def fig_scatter_and_regression(dict_i: dict, data_diagnostics: list, fig_format:
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 
@@ -1677,7 +1671,6 @@ def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_
     figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
     # save
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
-    plt.savefig(figure_file_path.replace("." + str(fig_format), ".png"), bbox_inches="tight", format="png")
     plt.close()
     return
 # ---------------------------------------------------------------------------------------------------------------------#

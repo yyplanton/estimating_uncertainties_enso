@@ -28,17 +28,17 @@ These webpages present some key results of the paper as well as additional infor
 
 ## 1. What is the influence of ensemble size?<a id='1-what-is-the-influence-of-ensemble-size'></a>
 According to theory, the uncertainty of the ensemble mean decreases with the square root of the ensemble size (equation 9 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)).  
-This is confirmed by our analysis: [PR](docs/f3_pr.md), [TS](docs/f3_ts.md)
+This is confirmed by our analysis: [Net Surface Heat Flux](docs/f3_hf.md), [NHF regressed on SST](docs/f3_hf_fbk.md), [PR](docs/f3_pr.md), [Sea Surface Height](docs/f3_sl.md), [SST regressed on SSH](docs/f3_sl_fbk.md), [SST](docs/f3_ts.md), [Taux](docs/f3_tx.md), [Taux regressed on SST](docs/f3_tx_fbk.md), [Tauy](docs/f3_ty.md)  
 
 
 ## 2. What is the influence of epoch length?<a id='2-what-is-the-influence-of-epoch-length'></a>
 According to theory, if time series' distributions are normal and samples are independent, the uncertainty of the ensemble mean decreases with the square root of the number of time steps (equations 5, 6 and 7 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)).  
-On average the uncertainty reduces with increasing epoch length: [PR](docs/f4_pr.md), [TS](docs/f4_ts.md)  
+On average the uncertainty reduces with increasing epoch length: [Net Surface Heat Flux](docs/f4_hf.md), [NHF regressed on SST](docs/f4_hf_fbk.md), [PR](docs/f4_pr.md), [Sea Surface Height](docs/f4_sl.md), [SST regressed on SSH](docs/f4_sl_fbk.md), [SST](docs/f4_ts.md), [Taux](docs/f4_tx.md), [Taux regressed on SST](docs/f4_tx_fbk.md), [Tauy](docs/f4_ty.md)  
 However there are large inter-model differences, linked to the non-normality of the distributions (see Figure 1 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)) and the relatively small ensemble sizes (see Figure S3 of Planton et al. [preprint](https://doi.org/10.22541/essoar.170196744.48068128/v1)). Note that changing the epoch length generally does not change the uncertainty of the multi-model ensemble mean: increasing the epoch length does not reduce the inter-model differences.  
 
 
 ## 3. Can piControl be used to estimate historical ensemble size?<a id='3-can-piControl-be-used-to-estimate-historical-ensemble-size'></a>
-The uncertainty of the ensemble mean is generally similar when computed with an historical ensemble and the corresponding piControl experiment: [PR](docs/f5_pr_030.md), [TS](docs/f5_ts_030.md)  
+The uncertainty of the ensemble mean is generally similar when computed with an historical ensemble and the corresponding piControl experiment: [Net Surface Heat Flux](docs/f5_hf_030.md), [NHF regressed on SST](docs/f5_hf_fbk_030.md), [PR](docs/f5_pr_030.md), [Sea Surface Height](docs/f5_sl_030.md), [SST regressed on SSH](docs/f5_sl_fbk_030.md), [SST](docs/f5_ts_030.md), [Taux](docs/f5_tx_030.md), [Taux regressed on SST](docs/f5_tx_fbk_030.md), [Tauy](docs/f5_ty_030.md)  
 This implies that the piControl experiment, which is computed before other experiment types, can be used to estimate *a priori* the size of the ensemble required to reduce the impact of internal variability and detect forced changes.
 
 

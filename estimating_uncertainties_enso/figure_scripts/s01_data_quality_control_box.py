@@ -10,9 +10,8 @@
 # ---------------------------------------------------#
 # estimating_uncertainties_enso package
 from . params import default_parameters
-from estimating_uncertainties_enso.compute_lib.data_lib import data_organize_json, data_organize_netcdf
-from estimating_uncertainties_enso.compute_lib.nest_lib import nest_quality_control_distributions, \
-    nest_quality_control_time_series
+from estimating_uncertainties_enso.compute_lib.data_lib import data_organize_json
+from estimating_uncertainties_enso.compute_lib.nest_lib import nest_quality_control_distributions
 from estimating_uncertainties_enso.compute_lib.tool_lib import tool_put_in_dict
 from estimating_uncertainties_enso.figure_templates.fig_template import fig_quality_control
 # ---------------------------------------------------#
@@ -40,8 +39,6 @@ default = {
     #
     # -- Figure
     #
-    # number of years per panel
-    "fig_years_per_panel": 500,
     # figure format: eps, pdf, png, svg
     "fig_format": default_parameters["fig_format"],
     # something added to figure name by user: str
@@ -49,7 +46,7 @@ default = {
     # figure name includes input parameters (may create a very long figure name)
     "fig_name_details": False,
     # size of each panel
-    "fig_panel_size": {"x_delt": 0, "x_frac": 1, "x_size": 16, "y_delt": 3, "y_frac": 0.2, "y_size": 6},
+    "fig_panel_size": {"x_delt": 0, "x_frac": 1, "x_size": 16, "y_delt": 3, "y_frac": 0.2, "y_size": 8},
     # color per dataset
     "fig_colors": {
         # experiments
@@ -57,7 +54,6 @@ default = {
         "piControl": default_parameters["fig_colors"]["piControl"],
         # datasets to highlight
         "boxplot": {"CAS-ESM2-0": "orange"},
-        "curve": {"KACE-1-0-G": "r", "HadGEM3-GC31-LL": "limegreen"},
     },
     # boxplots param
     "fig_box_linestyle": "-",
@@ -71,9 +67,78 @@ default = {
     # ticks
     "fig_ticks": {
         "y_axis": {
-            "ave_pr_val_n30e": [-0.8, 1.2], "ave_ts_val_n30e": [-0.8, 1.6], "ske_pr_ano_n30e": [-4.0, 5.0],
-            "ske_ts_ano_n30e": [-1.4, 1.4], "var_pr_ano_n30e": [-3.0, 7.0], "var_ts_ano_n30e": [-1.0, 2.1],
-            "tim_ts_val_glob": [-0.6, 1.7],
+            "ave_hf_val_n30e": [-5.0, 8.0],
+            "ave_hf_val_n34e": [-6.0, 8.0],
+            "ave_hf_val_n40e": [-10.0, 8.0],
+            "ave_pr_val_n30e": [-0.8, 1.1],
+            "ave_pr_val_n34e": [-1.0, 1.4],
+            "ave_pr_val_n40e": [-1.3, 1.6],
+            "ave_sl_val_n30e": [-7.0, 6.0],
+            "ave_sl_val_n34e": [-9.0, 6.0],
+            "ave_sl_val_n40e": [-10.0, 6.0],
+            "ave_ts_val_n30e": [-0.7, 1.5],
+            "ave_ts_val_n34e": [-0.7, 1.5],
+            "ave_ts_val_n40e": [-0.7, 1.5],
+            "ave_tx_val_n30e": [-4.0, 7.0],
+            "ave_tx_val_n34e": [-7.0, 11.0],
+            "ave_tx_val_n40e": [-7.0, 12.0],
+            "ave_ty_val_n30e": [-11.0, 4.0],
+            "ave_ty_val_n34e": [-11.0, 4.0],
+            "ave_ty_val_n40e": [-6.0, 4.0],
+            "cor_sl_n30e_to_ts_n30e": [-1.3, 0.2],
+            "cor_sl_n34e_to_ts_n34e": [-1.2, 0.3],
+            "cor_sl_n40e_to_ts_n40e": [-1.0, 0.5],
+            "cor_ts_n30e_to_hf_n30e": [-0.3, 0.9],
+            "cor_ts_n34e_to_hf_n34e": [-0.6, 0.8],
+            "cor_ts_n40e_to_hf_n40e": [-0.6, 0.8],
+            "cor_ts_n30e_to_tx_n34e": [-1.0, 0.3],
+            "cor_ts_n30e_to_tx_n40e": [-1.1, 0.3],
+            "cor_ts_n34e_to_tx_n40e": [-1.1, 0.3],
+            "fbk_sl_n30e_to_ts_n30e": [-38.0, 6.0],
+            "fbk_sl_n34e_to_ts_n34e": [-36.0, 10.0],
+            "fbk_sl_n40e_to_ts_n40e": [-25.0, 21.0],
+            "fbk_ts_n30e_to_hf_n30e": [-5.0, 16.0],
+            "fbk_ts_n34e_to_hf_n34e": [-9.0, 14.0],
+            "fbk_ts_n40e_to_hf_n40e": [-12.0, 14.0],
+            "fbk_ts_n30e_to_tx_n34e": [-6.5, 3.5],
+            "fbk_ts_n30e_to_tx_n40e": [-7.0, 4.0],
+            "fbk_ts_n34e_to_tx_n40e": [-6.5, 3.0],
+            "ske_hf_ano_n30e": [-3.5, 2.0],
+            "ske_hf_ano_n34e": [-4.0, 2.5],
+            "ske_hf_ano_n40e": [-2.5, 2.0],
+            "ske_pr_ano_n30e": [-4.0, 5.0],
+            "ske_pr_ano_n34e": [-3.0, 5.0],
+            "ske_pr_ano_n40e": [-2.0, 2.0],
+            "ske_sl_ano_n30e": [-1.5, 2.0],
+            "ske_sl_ano_n34e": [-1.5, 1.5],
+            "ske_sl_ano_n40e": [-2.0, 1.5],
+            "ske_ts_ano_n30e": [-1.4, 1.4],
+            "ske_ts_ano_n34e": [-1.4, 1.3],
+            "ske_ts_ano_n40e": [-1.5, 1.2],
+            "ske_tx_ano_n30e": [-0.8, 1.4],
+            "ske_tx_ano_n34e": [-1.0, 1.5],
+            "ske_tx_ano_n40e": [-1.0, 1.7],
+            "ske_ty_ano_n30e": [-2.0, 1.5],
+            "ske_ty_ano_n34e": [-4.0, 2.0],
+            "ske_ty_ano_n40e": [-3.0, 2.0],
+            "var_hf_ano_n30e": [-200, 550],
+            "var_hf_ano_n34e": [-300, 600],
+            "var_hf_ano_n40e": [-200, 400],
+            "var_pr_ano_n30e": [-3.0, 7.0],
+            "var_pr_ano_n34e": [-5.0, 9.0],
+            "var_pr_ano_n40e": [-5.0, 9.0],
+            "var_sl_ano_n30e": [-30, 50],
+            "var_sl_ano_n34e": [-30, 45],
+            "var_sl_ano_n40e": [-30, 45],
+            "var_ts_ano_n30e": [-1.0, 2.0],
+            "var_ts_ano_n34e": [-1.1, 1.9],
+            "var_ts_ano_n40e": [-0.7, 1.4],
+            "var_tx_ano_n30e": [-40, 75],
+            "var_tx_ano_n34e": [-150, 200],
+            "var_tx_ano_n40e": [-150, 300],
+            "var_ty_ano_n30e": [-20.0, 30.0],
+            "var_ty_ano_n34e": [-45.0, 70.0],
+            "var_ty_ano_n40e": [-35.0, 55.0],
         },
     },
     # plot titles
@@ -91,7 +156,7 @@ default = {
 # ---------------------------------------------------------------------------------------------------------------------#
 # Main
 # ---------------------------------------------------------------------------------------------------------------------#
-def s01_quality_control(
+def s01_quality_control_box(
         data_diagnostics: list = default["data_diagnostics"],
         data_epoch_lengths: list = default["data_epoch_lengths"],
         data_experiments: list = default["data_experiments"],
@@ -112,7 +177,6 @@ def s01_quality_control(
         fig_panel_size: dict = default["fig_panel_size"],
         fig_ticks: dict = default["fig_ticks"],
         fig_titles: dict = default["fig_titles"],
-        fig_years_per_panel: int = default["fig_years_per_panel"],
         panel_param_box: dict = default["panel_param_box"],
         panel_param_tim: dict = default["panel_param_tim"],
         **kwargs):
@@ -122,20 +186,11 @@ def s01_quality_control(
     values, metadata = data_organize_json(data_diagnostics, data_epoch_lengths, data_projects, data_experiments,
                                           data_filename=data_filename)
     #
-    # -- Read netCDF
-    #
-    list_dia = [k.replace(k[:4], "tim_").replace(k[-5:], "_glob") for k in data_diagnostics if "ave_ts_" in k]
-    tim_values, tim_metadata = data_organize_netcdf(list_dia, data_projects, data_experiments)
-    # add time series metadata to metadata dictionary
-    for k in list(tim_metadata.keys()):
-        metadata[k] = tim_metadata[k]
-    #
     # -- Organize data for plot
     #
     # compute the difference between piControl mean and the other values
     distributions_to_plot = nest_quality_control_distributions(values, data_experiments)
-    time_series_to_plot = nest_quality_control_time_series(tim_values, data_epoch_lengths[0])
-    for dia in list(distributions_to_plot.keys()) + list(time_series_to_plot.keys()):
+    for dia in list(distributions_to_plot.keys()):
         # x title
         if "x_axis" in list(fig_titles.keys()) and isinstance(fig_titles["x_axis"], dict) is True and \
                 dia in list(fig_titles["x_axis"].keys()) and isinstance(fig_titles["x_axis"][dia], str) is True:
@@ -146,6 +201,7 @@ def s01_quality_control(
         statistic = "" if fig_titles[dia]["z"] == "" else " " + str(fig_titles[dia]["z"])
         units = "\n" if metadata[dia]["units"] == "" else "\n(" + str(metadata[dia]["units"]) + ")"
         name = str(fig_titles[dia]["x"]) + str(statistic) + str(units)
+        name = name.replace("feedback", "fb.")
         fig_titles = tool_put_in_dict(fig_titles, name, "y_axis", dia)
         # y tics
         if "y_axis" in list(fig_ticks.keys()) and isinstance(fig_ticks, dict) is True and \
@@ -166,8 +222,8 @@ def s01_quality_control(
             fig_name += str(data_epoch_lengths[0])
         else:
             fig_name += str(len(data_epoch_lengths)) + "dur"
-    fig_quality_control(distributions_to_plot, time_series_to_plot, data_diagnostics, fig_format, fig_name,
+    fig_quality_control(distributions_to_plot, {}, data_diagnostics, fig_format, fig_name,
                         fig_box_linestyle, fig_box_linewidth, fig_box_mean_size, fig_box_outlier_size, fig_colors,
                         fig_cur_linecolor, fig_cur_linestyle, fig_cur_linewidth, fig_panel_size, fig_ticks, fig_titles,
-                        fig_years_per_panel, panel_param_box=panel_param_box, panel_param_tim=panel_param_tim)
+                        1, panel_param_box=panel_param_box, panel_param_tim=panel_param_tim)
 # ---------------------------------------------------------------------------------------------------------------------#

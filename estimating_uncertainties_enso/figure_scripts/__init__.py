@@ -6,6 +6,7 @@ from . f05_uncertainty_hi_vs_pi import f05_hi_vs_pi
 from . f06_examples_of_res import f06_required_ensemble_size
 
 from . s01_data_quality_control import s01_quality_control
+from . s01_data_quality_control_box import s01_quality_control_box
 from . s02_uncertainty_theory_vs_bootstrap import s02_theory_vs_bootstrap
 from . s03_uncertainty_vs_ensemble_size_MPI import s03_ensemble_size_mpi
 from . s04_uncertainty_vs_epoch_length_ensemble_size import s04_epoch_length_ensemble_size

@@ -24,6 +24,8 @@ default = {
     #
     # -- Data
     #
+    # file name
+    "data_filename": default_parameters["data_filename"],
     # list of diagnostics
     "data_diagnostics": default_parameters["data_diagnostics"],
     # list of epoch lengths
@@ -74,8 +76,10 @@ default = {
     "fig_smile_selected": default_parameters["fig_smile_selected"],
     # figure format: eps, pdf, png, svg
     "fig_format": default_parameters["fig_format"],
+    # something added to figure name by user: str
+    "fig_name_add": "",
     # figure name includes input parameters (may create a very long figure name)
-    "fig_detailed_name": False,
+    "fig_name_details": False,
     # size of each panel
     "fig_panel_size": {"x_delt": 0, "x_frac": 1, "x_size": 4, "y_delt": 0, "y_frac": 1, "y_size": 4},
     # marker shape, color and size: all markers are the same
@@ -103,6 +107,7 @@ default = {
 def s06_theory_vs_bootstrap(
         data_diagnostics: list = default["data_diagnostics"],
         data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_filename: str = default["data_filename"],
         data_projects: list = default["data_projects"],
         data_experiments: list = default["data_experiments"],
         data_mme_create: bool = default["data_mme_create"],
@@ -116,11 +121,12 @@ def s06_theory_vs_bootstrap(
         uncertainty_confidence_interval: float = default["uncertainty_confidence_interval"],
         uncertainty_resamples: int = default["uncertainty_resamples"],
         uncertainty_threshold: dict = default["uncertainty_threshold"],
-        fig_detailed_name: bool = default["fig_detailed_name"],
         fig_format: str = default["fig_format"],
         fig_marker: str = default["fig_marker"],
         fig_marker_color: str = default["fig_marker_color"],
         fig_marker_size: float = default["fig_marker_size"],
+        fig_name_add: str = default["fig_name_add"],
+        fig_name_details: bool = default["fig_name_details"],
         fig_panel_size: dict = default["fig_panel_size"],
         fig_ticks: dict = default["fig_ticks"],
         fig_titles: dict = default["fig_titles"],
@@ -130,10 +136,10 @@ def s06_theory_vs_bootstrap(
     # -- Read json
     #
     values, metadata = data_organize_json(
-        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_mme_create=data_mme_create,
-        data_mme_use_all_smiles=data_mme_use_all_smiles, data_mme_use_smile_mean=data_mme_use_smile_mean,
-        data_smile_minimum_size=data_smile_minimum_size, data_smile_rejected=data_smile_rejected,
-        data_smile_require_all_experiments=data_smile_require_all_experiments)
+        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_filename=data_filename,
+        data_mme_create=data_mme_create, data_mme_use_all_smiles=data_mme_use_all_smiles,
+        data_mme_use_smile_mean=data_mme_use_smile_mean, data_smile_minimum_size=data_smile_minimum_size,
+        data_smile_rejected=data_smile_rejected, data_smile_require_all_experiments=data_smile_require_all_experiments)
     #
     # -- Define thresholds for each method
     #
@@ -190,8 +196,8 @@ def s06_theory_vs_bootstrap(
     # -- Figure
     #
     # output figure name will be the file name (path removed and extension removed)
-    fig_name = __file__.split("/")[-1].split(".")[0]
-    if fig_detailed_name is True:
+    fig_name = __file__.split("/")[-1].split(".")[0] + str(fig_name_add)
+    if fig_name_details is True:
         # add details of the computation to the figure name
         fig_name += "_data_" + str(len(data_projects)) + "pro_" + str(len(data_experiments)) + "exp_" + \
                     str(data_smile_minimum_size) + "mem_" + str(len(data_diagnostics)) + "dia"

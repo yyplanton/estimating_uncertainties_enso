@@ -2,6 +2,7 @@
 
 ## 1. What is the influence of ensemble size?
 The uncertainty of the ensemble mean decreases with the square root of the ensemble size.
+This remains true for other variables: [Net Surface Heat flux](f3_hf.md), [NHF regressed on SST](f3_hf_fbk.md), [Sea Surface Height](f3_sl.md), [SST regressed on SSH](f3_sl_fbk.md), [SST](f3_ts.md), [Taux](f3_tx.md), [Taux regressed on SST](f3_tx_fbk.md), [Tauy](f3_ty.md)  
 
 
 - project: CMIP6
@@ -20,3 +21,4 @@ Computed using equation (9) from Planton et al. ([preprint](https://doi.org/10.2
 
 
 <iframe src="f03_uncertainty_vs_ensemble_size_pr.pdf" width="100%" height="500" frameborder="0" />
+

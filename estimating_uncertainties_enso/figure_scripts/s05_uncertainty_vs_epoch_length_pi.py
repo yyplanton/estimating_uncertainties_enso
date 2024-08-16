@@ -26,6 +26,8 @@ default = {
     #
     # -- Data
     #
+    # file name
+    "data_filename": default_parameters["data_filename"],
     # list of diagnostics
     "data_diagnostics": default_parameters["data_diagnostics"],
     # list of epoch lengths
@@ -108,6 +110,88 @@ default = {
             },
         },
     },
+    # "fig_ticks": {
+    #     "x_axis": {
+    #         "maximum": [round(k / 10, 1) for k in list(range(2, 11, 2))],
+    #         "minimum": list(range(30, 151, 30)),
+    #     },
+    #     "y_axis": {
+    #         "maximum": {
+    #             "ave_hf_val_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ave_hf_val_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ave_hf_val_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ave_pr_val_n30e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ave_pr_val_n34e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ave_pr_val_n40e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ave_sl_val_n30e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_sl_val_n34e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_sl_val_n40e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_ts_val_n30e": [round(k / 10, 1) for k in list(range(7, 20, 3))],
+    #             "ave_ts_val_n34e": [round(k / 10, 1) for k in list(range(7, 20, 3))],
+    #             "ave_ts_val_n40e": [round(k / 10, 1) for k in list(range(7, 20, 3))],
+    #             "ave_tx_val_n30e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_tx_val_n34e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_tx_val_n40e": [round(k / 10, 1) for k in list(range(6, 23, 4))],
+    #             "ave_ty_val_n30e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "ave_ty_val_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "ave_ty_val_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_sl_n40e_to_ts_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_sl_n34e_to_ts_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_sl_n30e_to_ts_n30e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_ts_n30e_to_hf_n30e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "cor_ts_n34e_to_hf_n34e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "cor_ts_n40e_to_hf_n40e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "cor_ts_n30e_to_tx_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_ts_n34e_to_tx_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "cor_ts_n30e_to_tx_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "fbk_sl_n40e_to_ts_n40e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_sl_n34e_to_ts_n34e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_sl_n30e_to_ts_n30e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_ts_n30e_to_hf_n30e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_ts_n34e_to_hf_n34e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_ts_n40e_to_hf_n40e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "fbk_ts_n30e_to_tx_n40e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "fbk_ts_n34e_to_tx_n40e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "fbk_ts_n30e_to_tx_n34e": [round(k / 10, 1) for k in list(range(2, 35, 8))],
+    #             "ske_hf_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_hf_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_hf_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_pr_ano_n30e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ske_pr_ano_n34e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ske_pr_ano_n40e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "ske_sl_ano_n30e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "ske_sl_ano_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "ske_sl_ano_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "ske_ts_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_ts_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_ts_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_tx_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_tx_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_tx_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_ty_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_ty_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "ske_ty_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_hf_ano_n30e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_hf_ano_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_hf_ano_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_pr_ano_n30e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "var_pr_ano_n34e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "var_pr_ano_n40e": [round(k / 10, 1) for k in list(range(4, 29, 6))],
+    #             "var_sl_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_sl_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_sl_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_ts_ano_n30e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_ts_ano_n34e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_ts_ano_n40e": [round(k / 10, 1) for k in list(range(3, 32, 7))],
+    #             "var_tx_ano_n30e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_tx_ano_n34e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_tx_ano_n40e": [round(k / 10, 1) for k in list(range(5, 26, 5))],
+    #             "var_ty_ano_n30e": list(range(0, 5, 1)),
+    #             "var_ty_ano_n34e": list(range(0, 5, 1)),
+    #             "var_ty_ano_n40e": list(range(0, 5, 1)),
+    #         },
+    #     },
+    # },
     # titles
     "fig_titles": {
         "x_axis": {
@@ -132,6 +216,7 @@ default = {
 def s05_epoch_length_pi(
         data_diagnostics: list = default["data_diagnostics"],
         data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_filename: str = default["data_filename"],
         data_projects: list = default["data_projects"],
         data_experiments: list = default["data_experiments"],
         data_mme_create: bool = default["data_mme_create"],
@@ -167,10 +252,10 @@ def s05_epoch_length_pi(
     # -- Read json
     #
     values, metadata = data_organize_json(
-        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_mme_create=data_mme_create,
-        data_mme_use_all_smiles=data_mme_use_all_smiles, data_mme_use_smile_mean=data_mme_use_smile_mean,
-        data_smile_minimum_size=data_smile_minimum_size, data_smile_rejected=data_smile_rejected,
-        data_smile_require_all_experiments=data_smile_require_all_experiments)
+        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_filename=data_filename,
+        data_mme_create=data_mme_create, data_mme_use_all_smiles=data_mme_use_all_smiles,
+        data_mme_use_smile_mean=data_mme_use_smile_mean, data_smile_minimum_size=data_smile_minimum_size,
+        data_smile_rejected=data_smile_rejected, data_smile_require_all_experiments=data_smile_require_all_experiments)
     #
     # -- Delete unneeded data
     #

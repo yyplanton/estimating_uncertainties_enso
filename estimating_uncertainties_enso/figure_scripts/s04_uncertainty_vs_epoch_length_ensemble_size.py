@@ -33,6 +33,8 @@ default = {
     #
     # -- Data
     #
+    # file name
+    "data_filename": default_parameters["data_filename"],
     # list of diagnostics
     "data_diagnostics": default_parameters["data_diagnostics"],
     # list of epoch lengths
@@ -68,8 +70,10 @@ default = {
     "fig_uncertainty_reference": "maximum",
     # figure format: eps, pdf, png, svg
     "fig_format": default_parameters["fig_format"],
+    # something added to figure name by user: str
+    "fig_name_add": "",
     # figure name includes input parameters (may create a very long figure name)
-    "fig_detailed_name": False,
+    "fig_name_details": False,
     # figure orientation: column (column = variables, row = statistics), row (column = statistics, row = variables)
     "fig_orientation": default_parameters["fig_orientation"],
     # position of the legend on the plot: bottom, right
@@ -132,6 +136,7 @@ default = {
 def s04_epoch_length_ensemble_size(
         data_diagnostics: list = default["data_diagnostics"],
         data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_filename: str = default["data_filename"],
         data_projects: list = default["data_projects"],
         data_experiments: list = default["data_experiments"],
         uncertainty_combinations: int = default["uncertainty_combinations"],
@@ -142,7 +147,6 @@ def s04_epoch_length_ensemble_size(
         uncertainty_sample_sizes: list = default["uncertainty_sample_sizes"],
         uncertainty_theory: bool = default["uncertainty_theory"],
         fig_colors: dict = default["fig_colors"],
-        fig_detailed_name: bool = default["fig_detailed_name"],
         fig_format: str = default["fig_format"],
         fig_legend_position: str = default["fig_legend_position"],
         fig_linestyles: dict = default["fig_linestyles"],
@@ -150,6 +154,8 @@ def s04_epoch_length_ensemble_size(
         fig_linezorder: int = default["fig_linezorder"],
         fig_marker: str = default["fig_marker"],
         fig_marker_size: float = default["fig_marker_size"],
+        fig_name_add: str = default["fig_name_add"],
+        fig_name_details: bool = default["fig_name_details"],
         fig_orientation: str = default["fig_orientation"],
         fig_panel_size: dict = default["fig_panel_size"],
         fig_smile_selected: str = default["fig_smile_selected"],
@@ -161,7 +167,8 @@ def s04_epoch_length_ensemble_size(
     #
     # -- Read json
     #
-    values, metadata = data_organize_json(data_diagnostics, data_epoch_lengths, data_projects, data_experiments)
+    values, metadata = data_organize_json(data_diagnostics, data_epoch_lengths, data_projects, data_experiments,
+                                          data_filename=data_filename)
     #
     # -- Reorder dictionary and keep only the selected dataset
     #
@@ -301,8 +308,8 @@ def s04_epoch_length_ensemble_size(
     # -- Figure
     #
     # output figure name will be the file name (path removed and extension removed)
-    fig_name = __file__.split("/")[-1].split(".")[0]
-    if fig_detailed_name is True:
+    fig_name = __file__.split("/")[-1].split(".")[0] + str(fig_name_add)
+    if fig_name_details is True:
         # add details of the computation to the figure name
         fig_name += "_data_" + str(len(data_projects)) + "pro_" + str(len(data_experiments)) + "exp_" + \
                     str(len(data_diagnostics)) + "dia_" + str(fig_smile_selected)

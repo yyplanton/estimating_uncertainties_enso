@@ -20,6 +20,7 @@ figure_scripts = {
     "f5": fig.f05_hi_vs_pi,
     "f6": fig.f06_required_ensemble_size,
     "s1": fig.s01_quality_control,
+    "s1b": fig.s01_quality_control_box,
     "s2": fig.s02_theory_vs_bootstrap,
     "s3": fig.s03_ensemble_size_mpi,
     "s4": fig.s04_epoch_length_ensemble_size,
@@ -41,6 +42,10 @@ figure_calling_names = ", ".join(figure_scripts.keys())
 # Creating the figures using the default number of combinations (theory; 10,000) or resamples (bootstrap; 1,000,000) can
 # take a very long time. To do a quick test we recommend to use smaller values.
 user_defined_parameters = {
+    # file name
+    # "data_filename": "estimating_uncertainties_in_simulated_enso_hf.json",
+    # "data_filename": "estimating_uncertainties_in_simulated_enso_sl.json",
+    # "data_filename": "estimating_uncertainties_in_simulated_enso_tx_ty.json",
     # list of diagnostics: list[str]
     # "data_diagnostics": ["ave_pr_val_n40e", "ave_pr_val_n34e", "ave_pr_val_n30e",
     #                      "var_pr_ano_n40e", "var_pr_ano_n34e", "var_pr_ano_n30e",
@@ -48,6 +53,24 @@ user_defined_parameters = {
     # "data_diagnostics": ["ave_ts_val_n40e", "ave_ts_val_n34e", "ave_ts_val_n30e",
     #                      "var_ts_ano_n40e", "var_ts_ano_n34e", "var_ts_ano_n30e",
     #                      "ske_ts_ano_n40e", "ske_ts_ano_n34e", "ske_ts_ano_n30e"],
+    # "data_diagnostics": ["ave_hf_val_n40e", "ave_hf_val_n34e", "ave_hf_val_n30e",
+    #                      "var_hf_ano_n40e", "var_hf_ano_n34e", "var_hf_ano_n30e",
+    #                      "ske_hf_ano_n40e", "ske_hf_ano_n34e", "ske_hf_ano_n30e"],
+    # "data_diagnostics": ["cor_ts_n40e_to_hf_n40e", "cor_ts_n34e_to_hf_n34e", "cor_ts_n30e_to_hf_n30e",
+    #                      "fbk_ts_n40e_to_hf_n40e", "fbk_ts_n34e_to_hf_n34e", "fbk_ts_n30e_to_hf_n30e"],
+    # "data_diagnostics": ["ave_sl_val_n40e", "ave_sl_val_n34e", "ave_sl_val_n30e",
+    #                      "var_sl_ano_n40e", "var_sl_ano_n34e", "var_sl_ano_n30e",
+    #                      "ske_sl_ano_n40e", "ske_sl_ano_n34e", "ske_sl_ano_n30e"],
+    # "data_diagnostics": ["cor_sl_n40e_to_ts_n40e", "cor_sl_n34e_to_ts_n34e", "cor_sl_n30e_to_ts_n30e",
+    #                      "fbk_sl_n40e_to_ts_n40e", "fbk_sl_n34e_to_ts_n34e", "fbk_sl_n30e_to_ts_n30e"],
+    # "data_diagnostics": ["ave_tx_val_n40e", "ave_tx_val_n34e", "ave_tx_val_n30e",
+    #                      "var_tx_ano_n40e", "var_tx_ano_n34e", "var_tx_ano_n30e",
+    #                      "ske_tx_ano_n40e", "ske_tx_ano_n34e", "ske_tx_ano_n30e"],
+    # "data_diagnostics": ["ave_ty_val_n40e", "ave_ty_val_n34e", "ave_ty_val_n30e",
+    #                      "var_ty_ano_n40e", "var_ty_ano_n34e", "var_ty_ano_n30e",
+    #                      "ske_ty_ano_n40e", "ske_ty_ano_n34e", "ske_ty_ano_n30e"],
+    # "data_diagnostics": ["cor_ts_n30e_to_tx_n40e", "cor_ts_n34e_to_tx_n40e", "cor_ts_n30e_to_tx_n34e",
+    #                      "fbk_ts_n30e_to_tx_n40e", "fbk_ts_n34e_to_tx_n40e", "fbk_ts_n30e_to_tx_n34e"],
     # compute uncertainty based on theory (or bootstrap): True, False
     # "uncertainty_theory": True,
     # compute relative uncertainty (or absolute): True, False
@@ -55,7 +78,7 @@ user_defined_parameters = {
     # confidence interval of the uncertainty: float [0, 100]
     # "uncertainty_confidence_interval": 95,
     # maximum number of combinations used if uncertainty_theory is True and smile_size > sample_size: int [10, 1e10]
-    # "uncertainty_combinations": 10000,
+    # "uncertainty_combinations": 5000,
     # number of resamples used for the bootstrap if uncertainty_theory is False: int [10, 1e10]
     # "uncertainty_resamples": 1000000,
     # if you changed any default parameter, you should create your own axis ticks for the figure or pass an empty
@@ -63,7 +86,8 @@ user_defined_parameters = {
     # fig_ticks = {"x_axis": {"diagnostic_1": []}, "y_axis": {"diagnostic_1": []}}
     # "fig_ticks": {},
     # something added to figure name to make it different from the standard name: str
-    # "fig_name_add": "_pr",
+    # "fig_name_add": "_hf_fbk",
+    "fig_format": "png",
 }
 
 if __name__ == '__main__':

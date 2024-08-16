@@ -25,6 +25,8 @@ default = {
     #
     # -- Data
     #
+    # file name
+    "data_filename": default_parameters["data_filename"],
     # list of diagnostics
     "data_diagnostics": default_parameters["data_diagnostics"],
     # list of epoch lengths
@@ -140,6 +142,7 @@ default = {
 def f06_required_ensemble_size(
         data_diagnostics: list = default["data_diagnostics"],
         data_epoch_lengths: list = default["data_epoch_lengths"],
+        data_filename: str = default["data_filename"],
         data_projects: list = default["data_projects"],
         data_experiments: list = default["data_experiments"],
         data_mme_create: bool = default["data_mme_create"],
@@ -173,10 +176,10 @@ def f06_required_ensemble_size(
     # -- Read json
     #
     values, metadata = data_organize_json(
-        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_mme_create=data_mme_create,
-        data_mme_use_all_smiles=data_mme_use_all_smiles, data_mme_use_smile_mean=data_mme_use_smile_mean,
-        data_smile_minimum_size=data_smile_minimum_size, data_smile_rejected=data_smile_rejected,
-        data_smile_require_all_experiments=data_smile_require_all_experiments)
+        data_diagnostics, data_epoch_lengths, data_projects, data_experiments, data_filename=data_filename,
+        data_mme_create=data_mme_create, data_mme_use_all_smiles=data_mme_use_all_smiles,
+        data_mme_use_smile_mean=data_mme_use_smile_mean, data_smile_minimum_size=data_smile_minimum_size,
+        data_smile_rejected=data_smile_rejected, data_smile_require_all_experiments=data_smile_require_all_experiments)
     #
     # -- Define thresholds for each method
     #

@@ -2,6 +2,7 @@
 
 ## 2. What is the influence of epoch length?
 The uncertainty of the ensemble mean should decrease with the square root of the number of independent time steps. There are large inter-model differences.
+This remains true for other variables: [Net Surface Heat flux](f4_hf.md), [NHF regressed on SST](f4_hf_fbk.md), [Sea Surface Height](f4_sl.md), [SST regressed on SSH](f4_sl_fbk.md), [SST](f4_ts.md), [Taux](f4_tx.md), [Taux regressed on SST](f4_tx_fbk.md), [Tauy](f4_ty.md)  
 
 
 - project: CMIP6
@@ -20,3 +21,4 @@ Computed using equation (9) from Planton et al. ([preprint](https://doi.org/10.2
 
 
 <iframe src="f04_uncertainty_vs_epoch_length_pr.pdf" width="100%" height="500" frameborder="0" />
+

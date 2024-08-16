@@ -239,15 +239,29 @@ def tool_figure_initialization(data_diagnostics: list, fig_orientation: str, x_d
     check_type(fig_orientation, "fig_orientation", str, error)
     print_fail(inspect__stack(), "\n".join(k for k in error))
     # reorder diagnostic list and select the number of diagnostic per line
+    list_dia = []
+    n_panel_per_line = 1
     if fig_orientation == "column":
-        list_dia = deepcopy(data_diagnostics)
-        n_panel_per_line = len([k for k in list_dia if "ave_" in k])
+        # order diagnostics to obtain first average, variance, skewness, correlation, slope
+        for k1 in ["ave_", "var_", "ske_", "cor_", "fbk_"]:
+            tmp = [k2 for k2 in data_diagnostics if k2[:4] == k1]
+            if len(tmp) > 0:
+                list_dia += tmp
+                n_panel_per_line = len(tmp)
     else:
-        list_dia = [
-            k2 for k1 in ["_pr_", "_ts_", "_tx_", "_ty_"] for k2 in data_diagnostics if k1 in k2 and k2[:4] != "nst_"]
-        n_panel_per_line = len([k for k in list_dia if ("_pr_" in list_dia[0] and "_pr_" in k) or
-                                ("_ts_" in list_dia[0] and "_ts_" in k) or ("_tx_" in list_dia[0] and "_tx_" in k) or
-                                ("_ty_" in list_dia[0] and "_ty_" in k)])
+        # order diagnostics to obtain first precipitation, temperature, zonal wind stress, meridional wind stress,
+        # net heat fluxes, sea level
+        for k1 in ["_pr_", "_ts_", "_tx_", "_ty_", "_hf_", "_sl_"]:
+            tmp = [k2 for k2 in data_diagnostics if k2[3:7] == k1 and k2[:4] not in ["cor_", "fbk_"]]
+            if len(tmp) > 0:
+                list_dia += tmp
+                n_panel_per_line = len(tmp)
+        # then wind stress feedback, heat flux feedback, thermocline feedback
+        for k1 in ["_to_tx_", "_to_hf_", "_to_ts_"]:
+            tmp = [k2 for k2 in data_diagnostics if k1 in k2 and k2[:4] in ["cor_", "fbk_"]]
+            if len(tmp) > 0:
+                list_dia += tmp
+                n_panel_per_line = len(tmp)
     # number of columns and rows of the plot
     nbr_c = n_panel_per_line * (x_size + x_delt) - x_delt
     nbr_l = math__ceil(len(list_dia) / n_panel_per_line) * (y_size + y_delt) - y_delt
