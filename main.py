@@ -15,6 +15,7 @@ import estimating_uncertainties_enso.figure_scripts as fig
 figure_scripts = {
     "f1": fig.f01_model_uncertainties,
     "f2": fig.f02_creating_distributions,
+    "f2b": fig.f02_creating_distributions_b,
     "f3": fig.f03_ensemble_size,
     "f4": fig.f04_epoch_length,
     "f5": fig.f05_hi_vs_pi,
@@ -31,6 +32,8 @@ figure_scripts = {
     "r9": fig.r09_mean_mean_vs_variance,
     "r14": fig.r14_epoch_length_detrending,
     "z1": fig.z01_print_res,
+    "z2": fig.z02_required_ensemble_size,
+    "z3": fig.z03_creating_distributions,
 }
 figure_calling_names = ", ".join(figure_scripts.keys())
 

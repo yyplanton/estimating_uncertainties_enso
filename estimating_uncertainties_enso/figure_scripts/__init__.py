@@ -1,5 +1,6 @@
 from . f01_obs_model_and_model_uncertainties import f01_model_uncertainties
 from . f02_time_series_to_distributions import f02_creating_distributions
+from . f02_time_series_to_distributions_b import f02_creating_distributions_b
 from . f03_uncertainty_vs_ensemble_size import f03_ensemble_size
 from . f04_uncertainty_vs_epoch_length import f04_epoch_length
 from . f05_uncertainty_hi_vs_pi import f05_hi_vs_pi
@@ -19,3 +20,5 @@ from . r09_ensemble_mea_mean_vs_variance import r09_mean_mean_vs_variance
 from . r14_uncertainty_vs_epoch_length_detrending import r14_epoch_length_detrending
 
 from . z01_print_res import z01_print_res
+from . z02_cnrs_examples_of_res import z02_required_ensemble_size
+from . z03_winter_school_time_series import z03_creating_distributions

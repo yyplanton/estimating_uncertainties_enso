@@ -1673,4 +1673,240 @@ def fig_time_series_and_distributions(dict_i: dict, diagnostic: str, data_epoch_
     plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
     plt.close()
     return
+
+
+def fig_time_series_and_distributions_b(dict_i: dict, diagnostic: str, data_epoch_lengths: list, data_experiments: list,
+                                        fig_format: str, fig_name: str, fig_colors: dict, fig_linecolor: str,
+                                        fig_linestyle: str, fig_linewidth: float, fig_panel_size: dict, fig_ticks: dict,
+                                        fig_titles: dict, nbr_dur: int = 2, nbr_gap: float = 0.5,
+                                        panel_param: dict = None):
+    if panel_param is None:
+        panel_param = {}
+    # plot initialization
+    list_durations = sorted(list(dict_i[data_experiments[0]].keys()), key=str.casefold)
+    dur_r = int(sorted(data_epoch_lengths, key=str.casefold)[0].split("_")[0])
+    nbr_exp = len(data_experiments)
+    x_frac = fig_panel_size["x_frac"]
+    y_delt, y_frac, y_size = fig_panel_size["y_delt"], fig_panel_size["y_frac"], fig_panel_size["y_size"]
+    nbr_c = int(dur_r * (nbr_dur * 2 + 1 + nbr_gap))
+    nbr_l = nbr_exp * (len(list_durations) * (y_size + y_delt) + (4 - 1) * y_delt) - 4 * y_delt
+    plt.figure(0, figsize=(nbr_c * x_frac, nbr_l * y_frac))
+    gs = GridSpec(nbr_l, nbr_c)
+    numbering = string.ascii_lowercase
+    x_position, y_position = 0, 0
+    counter = 0
+    for exp in data_experiments:
+        for ii, dur in enumerate(list_durations):
+            # time
+            d1 = dict_i[exp][list_durations[0]]["curve"]["x"][0]
+            y1, y2 = int(d1[0] / 12), int(d1[-1] / 12)
+            # diagnostic name
+            dia = diagnostic.replace(diagnostic[:4], "tim_") if dur not in data_epoch_lengths else deepcopy(diagnostic)
+            # epoch length
+            dur_t = deepcopy(dur_r) if dur not in data_epoch_lengths else int(dur.split("_")[0])
+            # nbr of dur_r epochs
+            int_t = int(nbr_dur * dur_r / dur_t)
+            # panel x-and-y sizes
+            if exp == "piControl" and dur not in data_epoch_lengths:
+                x_size2 = int((nbr_dur * 2 + nbr_gap + 1) * dur_r)
+            elif exp == "piControl":
+                x_size2 = int((nbr_dur * 2 + nbr_gap) * dur_r)
+            else:
+                x_size2 = y2 - y1 + 1
+            y_size2 = int(y_size / 1.3) if dur in data_epoch_lengths else deepcopy(y_size)
+            kwarg = {**panel_param, **{"x_size": x_size2 * x_frac, "y_size": y_size2 * y_frac}}
+            # dictionary
+            if dur not in data_epoch_lengths:
+                d1 = dict_i[exp][dur]["curve"]
+            elif exp == "piControl":
+                d1 = dict_i[exp][dur]["marker"]
+            else:
+                d1 = dict_i[exp][dur]["boxplot"]
+            # title
+            kwarg["title"] = numbering[counter]
+            if dur not in data_epoch_lengths:
+                kwarg["title_col"] = deepcopy(exp)
+            # x-axis
+            if exp == "piControl" and dur not in data_epoch_lengths:
+                kwarg["x_tic"] = list(range(0, nbr_dur * dur_r * 12 + 1, dur_r * 12)) + \
+                                 [k + (nbr_dur + nbr_gap) * dur_r * 12 for k in
+                                  list(range(0, nbr_dur * dur_r * 12 + 1, dur_r * 12))]
+                kwarg["x_lim"] = [0, (nbr_dur * 2 + nbr_gap + 1) * dur_r * 12]
+            elif exp == "piControl":
+                kwarg["x_tic"] = list(range(0, nbr_dur * dur_r * 12 + 1, dur_r * 12)) + \
+                                 [k + (nbr_dur + nbr_gap) * dur_r * 12 for k in
+                                  list(range(0, nbr_dur * dur_r * 12 + 1, dur_r * 12))]
+                kwarg["x_lim"] = [0, (nbr_dur * 2 + nbr_gap) * dur_r * 12]
+            else:
+                kwarg["x_tic"] = list(range(y1 * 12, y2 * 12 + 1, dur_r * 12))
+                kwarg["x_lim"] = [y1 * 12, y2 * 12]
+            kwarg["x_nam"] = fig_titles["x_axis"][exp][dia] if dur == data_epoch_lengths[-1] else ""
+            if exp == "piControl" and dur == data_epoch_lengths[-1]:
+                kwarg["x_lab"] = list(range(0, dur_r * nbr_dur + 1, dur_r))
+                kwarg["x_lab"] += [((y2 - y1 + 1) // dur_r - nbr_dur) * dur_r + k for k in kwarg["x_lab"]]
+            elif exp != "piControl" and dur == data_epoch_lengths[-1]:
+                kwarg["x_lab"] = [str(int(k / 12)) for k in kwarg["x_tic"]]
+            else:
+                kwarg["x_lab"] = [""] * len(kwarg["x_tic"])
+            # boxplot
+            y_range = []
+            if exp != "piControl" and dur in data_epoch_lengths:
+                arr_x, arr_y = d1["x"], d1["y"]
+                arr_c = fig_colors[dur] + ["k"] * (len(arr_x) - len(fig_colors[dur]))
+                arr_fs = [2] * len(arr_x)
+                arr_ls = ["-"] * len(arr_x)
+                arr_lw = [0.5] * len(arr_x)
+                arr_ms = [3] * len(arr_x)
+                kwarg.update({"box_c": arr_c, "box_fs": arr_fs, "box_ls": arr_ls, "box_lw": arr_lw, "box_ms": arr_ms,
+                              "box_x": arr_x, "box_y": arr_y})
+                y_range += arr_y
+            # marker
+            if exp == "piControl" and dur in data_epoch_lengths:
+                arr_y = d1["y"][: int_t] + d1["y"][-int_t:]
+                arr_x = d1["x"][: int_t]
+                arr_x += [(nbr_dur + nbr_gap) * dur_r * 12 + k for k in arr_x]
+                arr_c = fig_colors[dur] + ["k"] * (len(arr_x) - len(fig_colors[dur]))
+                arr_ls = ["o"] * len(arr_x)
+                arr_lw = [30] * len(arr_x)
+                kwarg.update({"mar_cf": arr_c, "mar_m": arr_ls, "mar_s": arr_lw, "mar_x": arr_x, "mar_y": arr_y})
+                y_range += arr_y
+            # curve
+            arr_c, arr_fs, arr_ls, arr_lw, arr_ms, arr_x, arr_y, arr_w, arr_z = [], [], [], [], [], [], [], [], []
+            if dur not in data_epoch_lengths:
+                if exp == "piControl":
+                    arr_y += [d1["y"][0][: int(nbr_dur * dur_r * 12)]]
+                    arr_y += [d1["y"][0][((y2 - y1 + 1) // dur_r - nbr_dur) * dur_r * 12:]]
+                    arr_x += [d1["x"][0][: int(nbr_dur * dur_r * 12)]]
+                    arr_x += [[max(arr_x[0]) + nbr_gap * dur_r * 12 + k for k in range(0, len(arr_y[1]))]]
+                else:
+                    arr_x += d1["x"]
+                    arr_y += d1["y"]
+                arr_c += [fig_linecolor] * len(arr_x)
+                arr_ls += [fig_linestyle] * len(arr_x)
+                arr_lw += [fig_linewidth] * len(arr_x)
+                arr_z += [1] * len(arr_x)
+                y_range += arr_y
+            # y-axis
+            kwarg["y_lab"], kwarg["y_lim"], kwarg["y_tic"] = tool_figure_axis(fig_ticks["y_axis"][dia], arr_i=y_range)
+            if dur not in data_epoch_lengths:
+                kwarg["y_nam"] = fig_titles["y_axis"][dia]
+            xx1, xx2, yy1, yy2 = kwarg["x_lim"] + kwarg["y_lim"]
+            dx, dy = (xx2 - xx1) / 100, (yy2 - yy1) / 100
+            if exp == "piControl":
+                if dur in data_epoch_lengths:
+                    list_int = [[dur_t * 12. * k] * 2 for k in range(1, int_t + 1)]
+                    list_int += [[list_int[-1][0] + dur_r * 12. / 2] * 2]
+                    list_int += [[list_int[-1][0] + dur_t * 12. * k] * 2 for k in range(1, int_t + 1)]
+                    arr_c += ["darkgrey"] * len(list_int)
+                    arr_ls += ["--"] * len(list_int)
+                    arr_lw += [1] * len(list_int)
+                    arr_x += list_int
+                    arr_y += [kwarg["y_lim"]] * len(list_int)
+                    arr_z += [2] * len(list_int)
+                arr_c += ["k"]
+                arr_ls += ["-"]
+                arr_lw += [2]
+                arr_x += [[(dur_r * nbr_dur + 1.5) * 12, (dur_r * (nbr_dur + nbr_gap) - 1.5) * 12]]
+                arr_y += [[yy1 + 50 * dy] * 2]
+                arr_z += [2]
+            kwarg.update({"cur_c": arr_c, "cur_ls": arr_ls, "cur_lw": arr_lw, "cur_x": arr_x, "cur_y": arr_y,
+                          "cur_z": arr_z})
+            # text
+            if dur in data_epoch_lengths:
+                if exp == "piControl":
+                    arr_x = [xx2 - dur_r * 12 / 2]
+                    arr_y = [yy2 - 1 * dy * default_plot["size_y"] / (y_size2 * y_frac)]
+                    arr_ls = ["center"]
+                    arr_ms = ["top"]
+                    arr_z = [str((y2 - y1 + 1) // dur_t) + " values\nusing " + str(dur_t) + "-year\nepochs"]
+                else:
+                    arr_x = [xx2 - 1 * dx * default_plot["size_x"] / (x_size2 * x_frac)]
+                    arr_y = [yy1 + 1 * dy * default_plot["size_y"] / (y_size2 * y_frac)]
+                    arr_ls = ["right"]
+                    arr_ms = ["bottom"]
+                    arr_z = [str(len(d1["y"][0])) + " values for each " + str(dur_t) + "-year epoch"]
+                arr_c, arr_fs, arr_lw = ["k"], [9], [0]
+                if ((len(data_epoch_lengths) % 2 == 0 and ii == len(data_epoch_lengths) / 2) or
+                        (len(data_epoch_lengths) % 2 == 1 and ii == math__ceil(len(data_epoch_lengths) / 2))):
+                    arr_x += [xx1 - 21 * dx * default_plot["size_x"] / (x_size2 * x_frac)]
+                    arr_y += [yy1 + 50 * dy]
+                    arr_c += ["k"]
+                    arr_fs += [15]
+                    arr_ls += ["right"]
+                    arr_ms += ["center"]
+                    arr_lw += [90]
+                    arr_z += [fig_titles["y_axis"][dia]]
+                kwarg.update({"text": arr_z, "text_c": arr_c, "text_fs": arr_fs, "text_ha": arr_ls, "text_r": arr_lw,
+                              "text_va": arr_ms, "text_x": arr_x, "text_y": arr_y})
+            # plot
+            ax = plt.subplot(gs[y_position: y_position + y_size2, x_position: x_position + x_size2])
+            plot_main(ax, **kwarg)
+            if exp == "piControl" and dur == data_epoch_lengths[-1]:
+                for k in range(3):
+                    xxx = (nbr_dur * dur_r + 4 + 3.5 * k) * 12
+                    yyy = yy1 + (len(data_epoch_lengths) * (1.1 + (y_delt / y_size2)) + (y_size / y_size2)) * 100 * dy
+                    ax.annotate("", xy=(xxx, yy1 - 5 * dy), xytext=(xxx, yyy), xycoords="data", annotation_clip=False,
+                                zorder=11, arrowprops=dict(arrowstyle="-", color="white", lw=4))
+            if dur in data_epoch_lengths:
+                for kk, cc in enumerate(fig_colors[dur]):
+                    if exp == "piControl":
+                        xx = xx1 + (dur_t / 2 + dur_t * kk) * 12
+                    else:
+                        xx = xx1 + (dur_t / 2 + 5 * kk) * 12
+                    yy = yy1 + (135 - 15 * kk) * dy
+                    ax.annotate("", xy=(xx, yy), xytext=(xx, yy - 3.5 * dy), xycoords="data", zorder=4,
+                                annotation_clip=False,
+                                arrowprops=dict(arrowstyle="-[,widthB=" + str(dur_t / 9) + ",lengthB=0.3", lw=2.0,
+                                                color=cc))
+                    ax.annotate("", xy=(xx, yy), xytext=(xx, yy1 + 40 * dy), xycoords="data", zorder=5,
+                                annotation_clip=False,
+                                arrowprops=dict(arrowstyle="<|-,head_length=0.5,head_width=0.3", color=cc, lw=2.0))
+            counter += 1
+            if exp == "piControl" and dur in data_epoch_lengths:
+                #
+                # -- piControl boxplot
+                #
+                xx, yy = xx2 + 1 * dx, yy1 + 50 * dy
+                ax.annotate("", xy=(xx, yy), xytext=(xx + 15 * dx, yy), xycoords="data", zorder=2,
+                            annotation_clip=False,
+                            arrowprops=dict(arrowstyle="<|-,head_length=0.5,head_width=0.3", color=fig_colors[exp],
+                                            lw=2.0))
+                x_size2 = int(dur_r / 3.5)
+                x_position = nbr_c - x_size2
+                kwarg = {**panel_param, **{"x_size": x_size2 * x_frac, "y_size": y_size2 * y_frac}}
+                # dictionary
+                d1 = dict_i[exp][dur]["boxplot"]
+                # title
+                kwarg["title"] = numbering[counter]
+                # x-axis
+                kwarg["x_lab"], kwarg["x_lim"], kwarg["x_nam"], kwarg["x_tic"] = [""], [-0.5, 0.5], "", [-1]
+                # y-axis
+                kwarg["y_tic"] = fig_ticks["y_axis"][dia]
+                kwarg["y_lim"] = [min(kwarg["y_tic"]), max(kwarg["y_tic"])]
+                kwarg["y_lab"], kwarg["y_nam"] = [""] * len(kwarg["y_tic"]), ""
+                # boxplot
+                arr_x, arr_y = d1["x"], d1["y"]
+                arr_c = [fig_colors[exp]] * len(arr_x)
+                arr_fs = [2] * len(arr_x)
+                arr_ls = ["-"] * len(arr_x)
+                arr_lw = [0.5] * len(arr_x)
+                arr_ms = [3] * len(arr_x)
+                arr_w = [0.5] * len(arr_x)
+                kwarg.update({"box_c": arr_c, "box_fs": arr_fs, "box_ls": arr_ls, "box_lw": arr_lw, "box_ms": arr_ms,
+                              "box_x": arr_x, "box_y": arr_y, "box_w": arr_w})
+                # plot
+                ax = plt.subplot(gs[y_position: y_position + y_size2, x_position: x_position + x_size2])
+                plot_main(ax, **kwarg)
+                counter += 1
+            x_position = 0
+            y_position += y_size2 + y_delt
+        y_position += int(y_delt * 1.5)
+    # plot directory (relative to current file directory)
+    plot_directory = "/".join(os.path.dirname(__file__).split("/")[:-2])
+    # path to output figure
+    figure_file_path = os.path.join(plot_directory, "plot/" + str(fig_name)) + "." + str(fig_format)
+    # save
+    plt.savefig(figure_file_path, bbox_inches="tight", format=fig_format)
+    plt.close()
+    return
 # ---------------------------------------------------------------------------------------------------------------------#
